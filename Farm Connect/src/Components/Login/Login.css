@@ -8,7 +8,7 @@
 }
 
 .login-card {
-  width: min(420px, 100%);
+  width: min(440px, 100%);
   padding: 36px 30px;
   background: #ffffff;
   border-radius: 24px;
@@ -17,22 +17,29 @@
   text-align: center;
 }
 
-.login-card h2 {
+.login-badge {
   margin: 0 0 8px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: #2d5e33;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 .login-card h1 {
-  margin: 0 0 24px;
+  margin: 0 0 8px;
   font-size: 28px;
   color: #16421f;
 }
 
+.login-subtitle {
+  margin: 0 0 24px;
+  color: #5a6b57;
+}
+
 .login-form {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .login-form input {
@@ -47,29 +54,67 @@
 
 .password-field {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #c6d6c8;
+  border-radius: 12px;
+  background: #f8fdf7;
+  padding-right: 12px;
 }
 
-.login-btn {
-  width: 100%;
+.password-field input {
+  border: none;
+  background: transparent;
+  flex: 1;
+}
+
+.login-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.login-btn,
+.secondary-btn {
+  flex: 1;
   padding: 14px 18px;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, #3f8c3f 0%, #67bd55 100%);
-  color: white;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login-btn:disabled {
-  background: #98bfa0;
+.login-btn {
+  background: linear-gradient(135deg, #3f8c3f 0%, #67bd55 100%);
+  color: white;
+}
+
+.secondary-btn {
+  background: #e9f6e8;
+  color: #2f582f;
+}
+
+.login-btn:disabled,
+.secondary-btn:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-.login-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(68, 132, 69, 0.18);
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.link-btn {
+  border: none;
+  background: transparent;
+  color: #2f582f;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
 }
 
 .toggle-password-btn {
@@ -97,4 +142,16 @@
 
 .login-message.error {
   color: #9d1f27;
+}
+
+@media (max-width: 600px) {
+  .login-actions,
+  .login-links {
+    flex-direction: column;
+  }
+
+  .login-btn,
+  .secondary-btn {
+    width: 100%;
+  }
 }
