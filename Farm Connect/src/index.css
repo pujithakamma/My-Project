@@ -1,0 +1,11 @@
+body{
+    margin:0;
+    font-family:Arial;
+}
+.container{
+    display:flex;
+}
+.content{
+    flex:1;
+    padding:20px;
+}

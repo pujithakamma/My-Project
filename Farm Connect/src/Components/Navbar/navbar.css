@@ -1,0 +1,45 @@
+.navbar{
+    background:green;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+    padding:15px 30px;
+}
+
+.navbar ul{
+    display:flex;
+    gap:20px;
+    list-style:none;
+    align-items: center;
+}
+
+.navbar li {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.navbar li:hover:not(.nav-register-btn) {
+    color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.nav-register-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.nav-register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    color: white;
+}
+
+.nav-register-btn:active {
+    transform: translateY(0);
+}
