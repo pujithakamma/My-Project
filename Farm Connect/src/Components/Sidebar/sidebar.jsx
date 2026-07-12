@@ -1,14 +1,24 @@
-import "./Sidebar.css";
+import { Link } from "react-router-dom";
+import "./sidebar.css";
 
-function Sidebar(){
-    return(
+function Sidebar() {
+    const items = [
+        { label: "Home", to: "/overview" },
+        { label: "Orders", to: "/orders" },
+        { label: "Live Farms", to: "/live-farms" },
+        { label: "Settings", to: "/settings" },
+    ];
+
+    return (
         <div className="sidebar">
             <h3>Dashboard</h3>
-            <p>Home</p>
-            <p>Orders</p>
-            <p>Live Farms</p>
-            <p>Settings</p>
+            {items.map((item) => (
+                <Link key={item.to} to={item.to} className="sidebar-link">
+                    {item.label}
+                </Link>
+            ))}
         </div>
-    )
+    );
 }
+
 export default Sidebar;

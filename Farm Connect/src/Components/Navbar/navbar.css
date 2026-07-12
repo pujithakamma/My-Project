@@ -1,45 +1,108 @@
-.navbar{
-    background:green;
-    color:white;
-    display:flex;
-    justify-content:space-between;
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding:15px 30px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, #0f4c1d 0%, #2e7d32 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 76, 29, 0.2);
+    backdrop-filter: blur(10px);
 }
 
-.navbar ul{
-    display:flex;
-    gap:20px;
-    list-style:none;
+.navbar-brand {
+    display: flex;
     align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-.navbar li {
-    cursor: pointer;
-    transition: all 0.3s ease;
+.navbar-brand strong {
+    display: block;
+    font-size: 1rem;
+}
+
+.navbar-brand small {
+    display: block;
+    font-size: 0.74rem;
     font-weight: 500;
+    opacity: 0.85;
 }
 
-.navbar li:hover:not(.nav-register-btn) {
-    color: #e0e0e0;
-    transform: scale(1.05);
+.brand-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1.2rem;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
-.nav-register-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 8px 20px;
-    border-radius: 6px;
+.navbar-links,
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.navbar-link,
+.navbar-action-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #f6fff7;
     font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.25s ease;
 }
 
-.nav-register-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-    color: white;
+.navbar-link:hover,
+.navbar-action-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.16);
 }
 
-.nav-register-btn:active {
-    transform: translateY(0);
+.navbar-link.active,
+.navbar-action-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.navbar-action-btn.primary {
+    background: #ffffff;
+    color: #1b5e20;
+}
+
+.navbar-action-btn.primary:hover {
+    background: #f2fff3;
+    color: #14511a;
+}
+
+.navbar-action-btn.secondary {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 20px;
+    }
+
+    .navbar-links,
+    .navbar-actions {
+        width: 100%;
+    }
+
+    .navbar-actions {
+        justify-content: flex-start;
+    }
 }

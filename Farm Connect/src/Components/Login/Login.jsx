@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-function Login({ onLoginSuccess, onNavigateToRegistration, registeredUsers = [] }) {
+function Login({ onLoginSuccess, registeredUsers = [] }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("info");
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     function handleClear() {
         setEmail("");
@@ -52,6 +54,7 @@ function Login({ onLoginSuccess, onNavigateToRegistration, registeredUsers = [] 
                 window.setTimeout(() => {
                     onLoginSuccess(activeUser);
                     setIsLoading(false);
+                    navigate("/dashboard/overview", { replace: true });
                 }, 500);
             } else {
                 setMessage("Invalid credentials. Please check your login details.");
@@ -89,7 +92,7 @@ function Login({ onLoginSuccess, onNavigateToRegistration, registeredUsers = [] 
                             onClick={() => setShowPassword((prev) => !prev)}
                             aria-label={showPassword ? "Hide password" : "Show password"}
                         >
-                            {showPassword ? "🙈" : "👁"}
+                            {showPassword ? "" : ""}
                         </button>
                     </div>
 
@@ -106,7 +109,7 @@ function Login({ onLoginSuccess, onNavigateToRegistration, registeredUsers = [] 
                         <button type="button" className="link-btn">
                             Forgot Password?
                         </button>
-                        <button type="button" className="link-btn" onClick={onNavigateToRegistration}>
+                        <button type="button" className="link-btn" onClick={() => navigate("/register")}>
                             Create Account
                         </button>
                     </div>

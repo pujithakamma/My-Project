@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Registration.css";
 
-function Registration({ onRegister, onNavigateToLogin }) {
+function Registration({ onRegister }) {
   const initialForm = {
     fullName: "",
     email: "",
@@ -26,6 +27,7 @@ function Registration({ onRegister, onNavigateToLogin }) {
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
+  const navigate = useNavigate();
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -144,7 +146,7 @@ function Registration({ onRegister, onNavigateToLogin }) {
     setFormData(initialForm);
 
     window.setTimeout(() => {
-      onNavigateToLogin?.();
+      navigate("/login");
     }, 1200);
   }
 

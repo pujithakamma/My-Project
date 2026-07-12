@@ -1,37 +1,51 @@
-import "./Navbar.css";
+import { NavLink } from "react-router-dom";
+import "./navbar.css";
 
-function Navbar({ onNavigateToRegistration, onNavigateToHome, onNavigateToLogin }) {
-    return (
-        <nav className="navbar">
-            <h2 
-                onClick={onNavigateToHome} 
-                style={{ cursor: onNavigateToHome ? "pointer" : "default" }}
-            > 
-                Farm Connect
-            </h2>
+function Navbar() {
+  const navItems = [
+    { to: "/", label: "Home" },
+    { to: "/products", label: "Products" },
+    { to: "/about", label: "About" },
+  ];
 
-            <ul>
-                <li onClick={onNavigateToHome} style={{ cursor: onNavigateToHome ? "pointer" : "default" }}>
-                    Home
-                </li>
-                <li>Products</li>
-                <li>Farmers</li>
-                <li>Contact</li>
-                {onNavigateToLogin && (
-                    <li onClick={onNavigateToLogin}>
-                        Login
-                    </li>
-                )}
-                {onNavigateToRegistration && (
-                    <li 
-                        onClick={onNavigateToRegistration}
-                        className="nav-register-btn"
-                    >
-                        Register
-                    </li>
-                )}
-            </ul>
-        </nav>
-    );
+  return (
+    <nav className="navbar">
+      <NavLink to="/" className="navbar-brand">
+        <span className="brand-icon">🌾</span>
+        <span>
+          <strong>Farm Connect</strong>
+          <small>Grow. Trade. Thrive.</small>
+        </span>
+      </NavLink>
+
+      <div className="navbar-links">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => (isActive ? "navbar-link active" : "navbar-link")}
+          >
+            {item.label}
+          </NavLink>
+        ))}
+      </div>
+
+      <div className="navbar-actions">
+        <NavLink
+          to="/login"
+          className={({ isActive }) => (isActive ? "navbar-action-btn secondary active" : "navbar-action-btn secondary")}
+        >
+          Login
+        </NavLink>
+        <NavLink
+          to="/register"
+          className={({ isActive }) => (isActive ? "navbar-action-btn primary active" : "navbar-action-btn primary")}
+        >
+          Register
+        </NavLink>
+      </div>
+    </nav>
+  );
 }
+
 export default Navbar;

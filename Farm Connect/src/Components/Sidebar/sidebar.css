@@ -1,5 +1,27 @@
-.sidebar{
-    width:200px;
-    background:#d8f3dc;
-    padding:20px;
+.sidebar {
+    width: 220px;
+    background: #d8f3dc;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 12px;
+}
+
+.sidebar h3 {
+    margin: 0 0 10px;
+    color: #1b5e20;
+}
+
+.sidebar-link {
+    text-decoration: none;
+    color: #1b5e20;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background: #c8e6c9;
 }
