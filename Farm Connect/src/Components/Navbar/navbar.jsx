@@ -1,7 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./navbar.css";
 
-function Navbar() {
+function Navbar({ isLoggedIn, onLogout }) {
+  const navigate = useNavigate();
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/products", label: "Products" },
@@ -31,18 +32,26 @@ function Navbar() {
       </div>
 
       <div className="navbar-actions">
-        <NavLink
-          to="/login"
-          className={({ isActive }) => (isActive ? "navbar-action-btn secondary active" : "navbar-action-btn secondary")}
-        >
-          Login
-        </NavLink>
-        <NavLink
-          to="/register"
-          className={({ isActive }) => (isActive ? "navbar-action-btn primary active" : "navbar-action-btn primary")}
-        >
-          Register
-        </NavLink>
+        {!isLoggedIn ? (
+          <>
+            <NavLink
+              to="/login"
+              className={({ isActive }) => (isActive ? "navbar-action-btn secondary active" : "navbar-action-btn secondary")}
+            >
+              Login
+            </NavLink>
+            <NavLink
+              to="/register"
+              className={({ isActive }) => (isActive ? "navbar-action-btn primary active" : "navbar-action-btn primary")}
+            >
+              Register
+            </NavLink>
+          </>
+        ) : (
+          <button type="button" className="navbar-action-btn primary" onClick={() => { onLogout?.(); navigate("/"); }}>
+            Logout
+          </button>
+        )}
       </div>
     </nav>
   );

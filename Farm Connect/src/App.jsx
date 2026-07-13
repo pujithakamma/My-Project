@@ -17,40 +17,73 @@ import DashboardLiveFarms from "./pages/DashboardLiveFarms";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [registeredUsers, setRegisteredUsers] = useState([
-    {
-      id: 1,
-      fullName: "Ramesh Kumar",
-      email: "ramesh@example.com",
-      username: "rameshkumar",
-      password: "ramesh@123",
-      mobile: "9876543210",
-      userType: "Farmer",
-      village: "Penamakuru",
-      farmName: "Green Valley Farm",
-      crops: "Tomato, Chillies",
-      address: "12, Main Road",
-      state: "Andhra Pradesh",
-      pincode: "600001",
-    },
-    {
-      id: 2,
-      fullName: "Meera Nair",
-      email: "meeranair@example.com",
-      username: "meeranair",
-      password: "meeranair@123",
-      mobile: "8123456789",
-      userType: "Customer",
-      village: "Pratthipadu",
-      farmName: "natures farm",
-      crops: "potatoes, carrots",
-      address: "3, Market Street",
-      state: "Andhra Pradesh",
-      pincode: "600002",
-    },
-  ]);
+  const getStoredAuthState = () => {
+    if (typeof window === "undefined") return { isLoggedIn: false, currentUser: null };
+
+    try {
+      const savedUser = window.localStorage.getItem("user");
+      if (!savedUser) return { isLoggedIn: false, currentUser: null };
+
+      const parsedUser = JSON.parse(savedUser);
+      return { isLoggedIn: true, currentUser: parsedUser };
+    } catch (error) {
+      console.error("Unable to read saved auth state:", error);
+      return { isLoggedIn: false, currentUser: null };
+    }
+  };
+
+  const getStoredUsers = () => {
+    if (typeof window === "undefined") return [];
+
+    try {
+      const savedUsers = window.localStorage.getItem("farmConnectUsers");
+      if (!savedUsers) return [];
+      return JSON.parse(savedUsers);
+    } catch (error) {
+      console.error("Unable to read saved users:", error);
+      return [];
+    }
+  };
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => getStoredAuthState().isLoggedIn);
+  const [currentUser, setCurrentUser] = useState(() => getStoredAuthState().currentUser);
+  const [registeredUsers, setRegisteredUsers] = useState(() => {
+    const defaultUsers = [
+      {
+        id: 1,
+        fullName: "Ramesh Kumar",
+        email: "ramesh@example.com",
+        username: "rameshkumar",
+        password: "ramesh@123",
+        mobile: "9876543210",
+        userType: "Farmer",
+        village: "Penamakuru",
+        farmName: "Green Valley Farm",
+        crops: "Tomato, Chillies",
+        address: "12, Main Road",
+        state: "Andhra Pradesh",
+        pincode: "600001",
+      },
+      {
+        id: 2,
+        fullName: "Meera Nair",
+        email: "meeranair@example.com",
+        username: "meeranair",
+        password: "meeranair@123",
+        mobile: "8123456789",
+        userType: "Customer",
+        village: "Pratthipadu",
+        farmName: "natures farm",
+        crops: "potatoes, carrots",
+        address: "3, Market Street",
+        state: "Andhra Pradesh",
+        pincode: "600002",
+      },
+    ];
+
+    const storedUsers = getStoredUsers();
+    return storedUsers.length > 0 ? storedUsers : defaultUsers;
+  });
 
   const location = useLocation();
 
@@ -71,14 +104,29 @@ function App() {
     document.title = pageTitle;
   }, [pageTitle]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (isLoggedIn && currentUser) {
+        window.localStorage.setItem("user", JSON.stringify(currentUser));
+      }
+      window.localStorage.setItem("farmConnectUsers", JSON.stringify(registeredUsers));
+    }
+  }, [isLoggedIn, currentUser, registeredUsers]);
+
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     setIsLoggedIn(true);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("user", JSON.stringify(user));
+    }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
     setIsLoggedIn(false);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("user");
+    }
   };
 
   const handleRegister = (userData) => {
@@ -87,11 +135,11 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={<Layout isLoggedIn={isLoggedIn} onLogout={handleLogout} />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="products" element={<ProductsPage />} />
-        <Route path="products/:id" element={<ProductDetailsPage />} />
+        <Route path="details/:id" element={<ProductDetailsPage />} />
         <Route path="overview" element={<DashboardOverview />} />
         <Route path="orders" element={<DashboardOrders />} />
         <Route path="live-farms" element={<DashboardLiveFarms />} />

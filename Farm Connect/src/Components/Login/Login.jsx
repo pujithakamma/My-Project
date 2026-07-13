@@ -14,7 +14,7 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
     function handleClear() {
         setEmail("");
         setPassword("");
-        setMessage("");
+        setMessage(""); 
         setMessageType("info");
     }
 
@@ -36,25 +36,20 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
             const matchedUser = registeredUsers.find((user) => {
                 const storedEmail = user.email?.toLowerCase();
                 const storedUsername = user.username?.toLowerCase();
-                return (storedEmail === normalizedInput || storedUsername === normalizedInput) && user.password === password;
+                const storedFullName = user.fullName?.toLowerCase();
+                return (
+                    (storedEmail === normalizedInput || storedUsername === normalizedInput || storedFullName === normalizedInput) &&
+                    user.password === password
+                );
             });
 
-            const isValidLogin =
-                (normalizedInput === "admin@gmail.com" || normalizedInput === "admin") && password === "admin123";
-
-            if (matchedUser || isValidLogin) {
-                const activeUser = matchedUser || {
-                    fullName: "Admin",
-                    email: normalizedInput,
-                    userType: "Admin",
-                };
-
-                setMessage(`Welcome back, ${activeUser.fullName || activeUser.email}!`);
+            if (matchedUser) {
+                setMessage(`Welcome back, ${matchedUser.fullName || matchedUser.email}!`);
                 setMessageType("success");
                 window.setTimeout(() => {
-                    onLoginSuccess(activeUser);
+                    onLoginSuccess(matchedUser);
                     setIsLoading(false);
-                    navigate("/dashboard/overview", { replace: true });
+                    navigate("/products", { replace: true });
                 }, 500);
             } else {
                 setMessage("Invalid credentials. Please check your login details.");
