@@ -1,7 +1,49 @@
-<<<<<<< HEAD
-# Login-page
-This repo consists of Login Page i have created for my project
-=======
 # Farm-Connect
-This repo consist of the code i have created for my project.
->>>>>>> 95a0f0c040f96b103ff0acf988d6ce27a27bf82a
+
+## Project Description
+
+Farm-Connect is a React-based web application that connects farmers directly with customers. It allows users to browse products, view details, and place orders while helping farmers sell without intermediaries.
+
+## New Features
+
+* Dynamic Routing
+* Details Page
+* View Navigation
+* API Integration
+* Data Fetching using `useEffect`
+* Loading State
+* Local Storage
+* Custom 404 Page
+
+## APIs Used
+
+* JSONPlaceholder API
+
+## React Concepts Implemented
+
+* Functional Components
+* JSX
+* Props
+* useState
+* useEffect
+* React Router
+* Dynamic Routing
+* Conditional Rendering
+* Local Storage
+
+## Screenshots
+
+* Home Page
+* Product List
+* Product Details Page
+* Loading Screen
+* 404 Page
+
+## Technologies Used
+
+* React
+* Vite
+* JavaScript
+* HTML
+* CSS
+
