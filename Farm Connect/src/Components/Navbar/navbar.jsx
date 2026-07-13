@@ -6,6 +6,7 @@ function Navbar({ isLoggedIn, onLogout }) {
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/products", label: "Products" },
+    { to: "/users", label: "Users" },
     { to: "/about", label: "About" },
   ];
 

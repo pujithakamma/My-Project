@@ -14,6 +14,7 @@ import DashboardProfile from "./pages/DashboardProfile";
 import DashboardSettings from "./pages/DashboardSettings";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardLiveFarms from "./pages/DashboardLiveFarms";
+import UserDetailsPage from "./pages/UserDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
@@ -86,6 +87,13 @@ function App() {
   });
 
   const location = useLocation();
+  const [pageLoading, setPageLoading] = useState(false);
+
+  useEffect(() => {
+    setPageLoading(true);
+    const timer = window.setTimeout(() => setPageLoading(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
 
   const pageTitle = useMemo(() => {
     const titles = {
@@ -135,11 +143,12 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Layout isLoggedIn={isLoggedIn} onLogout={handleLogout} />}>
+      <Route path="/" element={<Layout isLoggedIn={isLoggedIn} onLogout={handleLogout} pageLoading={pageLoading} />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="details/:id" element={<ProductDetailsPage />} />
+        <Route path="users" element={<UserDetailsPage registeredUsers={registeredUsers} />} />
         <Route path="overview" element={<DashboardOverview />} />
         <Route path="orders" element={<DashboardOrders />} />
         <Route path="live-farms" element={<DashboardLiveFarms />} />

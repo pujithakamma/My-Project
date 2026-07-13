@@ -6,6 +6,7 @@ function Sidebar() {
         { label: "Home", to: "/overview" },
         { label: "Orders", to: "/orders" },
         { label: "Live Farms", to: "/live-farms" },
+        { label: "Users", to: "/users" },
         { label: "Settings", to: "/settings" },
     ];
 

@@ -72,6 +72,7 @@ function ProductDetailsPage() {
     const fetchProduct = async () => {
       setLoading(true);
       setError("");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       try {
         let cachedProducts = [];
