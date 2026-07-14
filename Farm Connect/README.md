@@ -1,25 +1,25 @@
 # Farm Connect
 
 ## Description
-Farm Connect is a React application that helps farmers connect directly with customers. Users can browse farm products, view detailed information about each product, and navigate seamlessly through the application using React Router.
+Farm Connect is a React application that helps farmers connect directly with customers. Users can browse farm products, view detailed information about each product, and navigate seamlessly using React Router. The application also demonstrates API integration, loading states, local storage, and reusable React components.
 
-## New Features
-- Dynamic Routing
-- Product Details Page
-- View Navigation
-- API Integration
-- useEffect Hook
-- Loading State
-- Local Storage
-- Custom 404 Page
-- Responsive Navigation
+## Updated Features
+- Added Dynamic Routing using React Router DOM
+- Created Product Details Page
+- Implemented View Navigation
+- Integrated API for fetching dynamic product data
+- Added useEffect Hook for data fetching
+- Implemented Loading State while loading data
+- Added Local Storage to store user data
+- Created a Custom 404 Page for invalid routes
+- Improved navigation and user interface
 
 ## APIs Used
-- Fake Store API (or mention the API you actually used)
-- Example: https://fakestoreapi.com/products
+- Fake Store API
+- https://fakestoreapi.com/products
 
 ## React Concepts Implemented
-- React Functional Components
+- Functional Components
 - JSX
 - Props
 - useState
@@ -34,6 +34,7 @@ Farm Connect is a React application that helps farmers connect directly with cus
 - Conditional Rendering
 - Loading State
 - Local Storage
+- Component Reusability
 
 ## Technologies Used
 - React
@@ -49,20 +50,6 @@ Farm Connect is a React application that helps farmers connect directly with cus
 npm install
 npm run dev
 ```
-
-## Screenshots
-
-### Home Page
-![Home Page](screenshots/home.png)
-
-### Products Page
-![Products Page](screenshots/products.png)
-
-### Product Details Page
-![Product Details](screenshots/details.png)
-
-### 404 Page
-![404 Page](screenshots/404.png)
 
 ## Project Structure
 
