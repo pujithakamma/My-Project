@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./navbar.css";
 
-function Navbar({ isLoggedIn, onLogout }) {
+function Navbar({ isLoggedIn, onLogout, theme, onThemeToggle }) {
   const navigate = useNavigate();
   const navItems = [
     { to: "/", label: "Home" },
@@ -33,6 +33,9 @@ function Navbar({ isLoggedIn, onLogout }) {
       </div>
 
       <div className="navbar-actions">
+        <button type="button" className="navbar-action-btn secondary theme-toggle-btn" onClick={onThemeToggle}>
+          {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+        </button>
         {!isLoggedIn ? (
           <>
             <NavLink
@@ -49,7 +52,7 @@ function Navbar({ isLoggedIn, onLogout }) {
             </NavLink>
           </>
         ) : (
-          <button type="button" className="navbar-action-btn primary" onClick={() => { onLogout?.(); navigate("/"); }}>
+          <button type="button" className="navbar-action-btn primary" onClick={onLogout}>
             Logout
           </button>
         )}

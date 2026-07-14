@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import Layout from "./Components/Layout/Layout";
 import Login from "./Components/Login/Login";
@@ -15,7 +15,11 @@ import DashboardSettings from "./pages/DashboardSettings";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardLiveFarms from "./pages/DashboardLiveFarms";
 import UserDetailsPage from "./pages/UserDetailsPage";
+import UserEditPage from "./pages/UserEditPage";
 import NotFoundPage from "./pages/NotFoundPage";
+
+const THEME_STORAGE_KEY = "farmConnectTheme";
+const LAST_PAGE_STORAGE_KEY = "farmConnectLastPage";
 
 function App() {
   const getStoredAuthState = () => {
@@ -43,6 +47,28 @@ function App() {
     } catch (error) {
       console.error("Unable to read saved users:", error);
       return [];
+    }
+  };
+
+  const getStoredTheme = () => {
+    if (typeof window === "undefined") return "light";
+
+    try {
+      return window.localStorage.getItem(THEME_STORAGE_KEY) || "light";
+    } catch (error) {
+      console.error("Unable to read saved theme:", error);
+      return "light";
+    }
+  };
+
+  const getStoredLastPage = () => {
+    if (typeof window === "undefined") return "/products";
+
+    try {
+      return window.sessionStorage.getItem(LAST_PAGE_STORAGE_KEY) || "/products";
+    } catch (error) {
+      console.error("Unable to read session page:", error);
+      return "/products";
     }
   };
 
@@ -85,13 +111,16 @@ function App() {
     const storedUsers = getStoredUsers();
     return storedUsers.length > 0 ? storedUsers : defaultUsers;
   });
+  const [theme, setTheme] = useState(() => getStoredTheme());
+  const [lastVisitedPage, setLastVisitedPage] = useState(() => getStoredLastPage());
 
   const location = useLocation();
+  const navigate = useNavigate();
   const [pageLoading, setPageLoading] = useState(false);
 
   useEffect(() => {
     setPageLoading(true);
-    const timer = window.setTimeout(() => setPageLoading(false), 2000);
+    const timer = window.setTimeout(() => setPageLoading(false), 1200);
     return () => window.clearTimeout(timer);
   }, [location.pathname]);
 
@@ -114,12 +143,21 @@ function App() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
       if (isLoggedIn && currentUser) {
         window.localStorage.setItem("user", JSON.stringify(currentUser));
       }
       window.localStorage.setItem("farmConnectUsers", JSON.stringify(registeredUsers));
+      window.sessionStorage.setItem(LAST_PAGE_STORAGE_KEY, location.pathname);
+      setLastVisitedPage(location.pathname);
     }
-  }, [isLoggedIn, currentUser, registeredUsers]);
+  }, [isLoggedIn, currentUser, registeredUsers, location.pathname]);
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
@@ -135,31 +173,56 @@ function App() {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem("user");
     }
+    navigate("/login", { replace: true });
   };
 
   const handleRegister = (userData) => {
     setRegisteredUsers((prev) => [userData, ...prev]);
   };
 
+  const handleDeleteUser = (userId) => {
+    setRegisteredUsers((prev) => prev.filter((user) => user.id !== userId));
+  };
+
+  const handleUpdateUser = (userId, updates) => {
+    setRegisteredUsers((prev) =>
+      prev.map((user) => (user.id === userId ? { ...user, ...updates } : user))
+    );
+  };
+
   return (
     <Routes>
-      <Route path="/" element={<Layout isLoggedIn={isLoggedIn} onLogout={handleLogout} pageLoading={pageLoading} />}>
+      <Route
+        path="/"
+        element={
+          <Layout
+            isLoggedIn={isLoggedIn}
+            onLogout={handleLogout}
+            pageLoading={pageLoading}
+            theme={theme}
+            onThemeToggle={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+          />
+        }
+      >
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
-        <Route path="products" element={<ProductsPage />} />
+        <Route path="products" element={<ProductsPage lastVisitedPage={lastVisitedPage} />} />
         <Route path="details/:id" element={<ProductDetailsPage />} />
-        <Route path="users" element={<UserDetailsPage registeredUsers={registeredUsers} />} />
+        <Route path="users" element={<UserDetailsPage registeredUsers={registeredUsers} onDeleteUser={handleDeleteUser} />} />
+        <Route path="users/edit/:id" element={<UserEditPage registeredUsers={registeredUsers} onUpdateUser={handleUpdateUser} />} />
         <Route path="overview" element={<DashboardOverview />} />
         <Route path="orders" element={<DashboardOrders />} />
         <Route path="live-farms" element={<DashboardLiveFarms />} />
         <Route path="settings" element={<DashboardSettings />} />
         <Route
           path="login"
-          element={isLoggedIn ? <Navigate to="/dashboard/overview" replace /> : (
-            <Login onLoginSuccess={handleLoginSuccess} registeredUsers={registeredUsers} />
-          )}
+          element={
+            isLoggedIn ? <Navigate to="/dashboard/overview" replace /> : (
+              <Login onLoginSuccess={handleLoginSuccess} registeredUsers={registeredUsers} />
+            )
+          }
         />
-        <Route path="register" element={<Registration onRegister={handleRegister} />} />
+        <Route path="register" element={<Registration registeredUsers={registeredUsers} onRegister={handleRegister} />} />
         <Route
           path="dashboard"
           element={<DashboardPage user={currentUser} isLoggedIn={isLoggedIn} onLogout={handleLogout} />}

@@ -1,14 +1,40 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./pages.css";
 import "./UserDetailsPage.css";
 
-function UserDetailsPage({ registeredUsers = [] }) {
+function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return;
+
+    const matchedUser = registeredUsers.find((user) => {
+      const username = String(user.username ?? "").toLowerCase();
+      const idValue = String(user.id ?? "");
+      return idValue === term || username === term;
+    });
+
+    setSelectedUser(matchedUser || null);
+  };
 
   const filteredUsers = useMemo(() => {
-    if (filter === "all") return registeredUsers;
-    return registeredUsers.filter((user) => user.userType === filter);
-  }, [filter, registeredUsers]);
+    const normalizedTerm = searchTerm.trim().toLowerCase();
+    const baseUsers = filter === "all" ? registeredUsers : registeredUsers.filter((user) => user.userType === filter);
+
+    if (!normalizedTerm) return baseUsers;
+
+    return baseUsers.filter((user) => {
+      const username = String(user.username ?? "").toLowerCase();
+      const idValue = String(user.id ?? "");
+      return idValue === normalizedTerm || username.includes(normalizedTerm);
+    });
+  }, [filter, registeredUsers, searchTerm]);
 
   return (
     <div className="page-shell">
@@ -21,7 +47,17 @@ function UserDetailsPage({ registeredUsers = [] }) {
           <span className="highlight-pill">{filteredUsers.length} records</span>
         </div>
 
-        <div className="toolbar" style={{ gap: 12, flexWrap: "wrap" }}>
+        <form className="toolbar" style={{ gap: 12, flexWrap: "wrap" }} onSubmit={handleSearchSubmit}>
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Search by ID or username"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          <button type="submit" className="page-btn secondary" style={{ minWidth: 120 }}>
+            Search
+          </button>
           <label htmlFor="user-filter" style={{ marginRight: 8, fontWeight: 600, color: "#2e7d32" }}>
             Show:
           </label>
@@ -35,7 +71,7 @@ function UserDetailsPage({ registeredUsers = [] }) {
             <option value="Farmer">Farmers</option>
             <option value="Customer">Customers</option>
           </select>
-        </div>
+        </form>
 
         <div className="table-wrapper">
           <table className="details-table">
@@ -47,14 +83,13 @@ function UserDetailsPage({ registeredUsers = [] }) {
                 <th>Type</th>
                 <th>Village</th>
                 <th>State</th>
-                <th>Farm Name</th>
-                <th>Crops</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ padding: "24px", textAlign: "center", color: "#4b5563" }}>
+                  <td colSpan="7" style={{ padding: "24px", textAlign: "center", color: "#4b5563" }}>
                     No registered users found.
                   </td>
                 </tr>
@@ -67,14 +102,77 @@ function UserDetailsPage({ registeredUsers = [] }) {
                     <td>{user.userType}</td>
                     <td>{user.village}</td>
                     <td>{user.state}</td>
-                    <td>{user.userType === "Farmer" ? user.farmName || "—" : "—"}</td>
-                    <td>{user.userType === "Farmer" ? user.crops || "—" : "—"}</td>
+                    <td className="action-cell">
+                      <button
+                        type="button"
+                        className="view-btn"
+                        onClick={() => setSelectedUser(user)}
+                      >
+                        View
+                      </button>
+                      <button
+                        type="button"
+                        className="view-btn"
+                        onClick={() => navigate(`/users/edit/${user.id}`)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="delete-btn"
+                        onClick={() => {
+                          if (window.confirm(`Delete ${user.fullName}?`)) {
+                            onDeleteUser?.(user.id);
+                            if (selectedUser?.id === user.id) {
+                              setSelectedUser(null);
+                            }
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        {selectedUser && (
+          <div className="user-preview-card">
+            <h2>User Details</h2>
+            <div className="user-preview-grid">
+              <div>
+                <strong>Name</strong>
+                <p>{selectedUser.fullName}</p>
+              </div>
+              <div>
+                <strong>Email</strong>
+                <p>{selectedUser.email}</p>
+              </div>
+              <div>
+                <strong>Mobile</strong>
+                <p>{selectedUser.mobile}</p>
+              </div>
+              <div>
+                <strong>Type</strong>
+                <p>{selectedUser.userType}</p>
+              </div>
+              <div>
+                <strong>Village</strong>
+                <p>{selectedUser.village}</p>
+              </div>
+              <div>
+                <strong>State</strong>
+                <p>{selectedUser.state}</p>
+              </div>
+            </div>
+            <button type="button" className="secondary-btn" onClick={() => setSelectedUser(null)}>
+              Close preview
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

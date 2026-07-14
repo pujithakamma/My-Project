@@ -55,7 +55,6 @@ function ProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     setError("");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
       const farmProducts = [

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Registration.css";
 
-function Registration({ onRegister }) {
+function Registration({ registeredUsers = [], onRegister }) {
   const initialForm = {
     fullName: "",
     email: "",
@@ -119,8 +119,12 @@ function Registration({ onRegister }) {
       return;
     }
 
+    const nextUserId = registeredUsers.length > 0
+      ? Math.max(...registeredUsers.map((user) => Number(user.id) || 0)) + 1
+      : 1;
+
     const newUser = {
-      id: Date.now(),
+      id: nextUserId,
       fullName: formData.fullName.trim(),
       email: formData.email.trim().toLowerCase(),
       username: formData.fullName.trim().toLowerCase().replace(/\s+/g, ""),

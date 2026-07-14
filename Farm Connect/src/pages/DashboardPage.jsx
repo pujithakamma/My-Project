@@ -11,11 +11,12 @@ function DashboardPage({ user, isLoggedIn, onLogout }) {
           <div className="dashboard-sidebar-title">Dashboard</div>
           <NavLink to="/dashboard/overview">Home</NavLink>
           <NavLink to="/dashboard/overview">Overview</NavLink>
+          <NavLink to="/products">Products</NavLink>
           <NavLink to="/dashboard/profile">Profile</NavLink>
           <NavLink to="/dashboard/orders">Orders</NavLink>
           <NavLink to="/dashboard/live-farms">Live Farms</NavLink>
           <NavLink to="/dashboard/settings">Settings</NavLink>
-          <button className="page-btn secondary" onClick={() => onLogout()} style={{ marginTop: 12 }}>
+          <button className="page-btn secondary" onClick={onLogout} style={{ marginTop: 12 }}>
             {isLoggedIn ? "Logout" : "Back to Login"}
           </button>
         </aside>

@@ -14,7 +14,7 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
     function handleClear() {
         setEmail("");
         setPassword("");
-        setMessage(""); 
+        setMessage("");
         setMessageType("info");
     }
 
@@ -49,7 +49,7 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
                 window.setTimeout(() => {
                     onLoginSuccess(matchedUser);
                     setIsLoading(false);
-                    navigate("/products", { replace: true });
+                    navigate("/dashboard/overview", { replace: true });
                 }, 500);
             } else {
                 setMessage("Invalid credentials. Please check your login details.");

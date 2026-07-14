@@ -12,6 +12,10 @@
     backdrop-filter: blur(10px);
 }
 
+:root[data-theme="dark"] .navbar {
+    background: linear-gradient(135deg, #102516 0%, #1e3a25 100%);
+}
+
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -61,6 +65,8 @@
     color: #f6fff7;
     font-weight: 600;
     transition: all 0.25s ease;
+    border: 0;
+    cursor: pointer;
 }
 
 .navbar-link:hover,
@@ -87,6 +93,24 @@
 
 .navbar-action-btn.secondary {
     border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.theme-toggle-btn {
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f7f7f7;
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 768px) {
