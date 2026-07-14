@@ -1,37 +1,47 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
 # Farm Connect
 
 ## Description
-Farm Connect is a React application that helps farmers connect directly with customers.
+Farm Connect is a React application that helps farmers connect directly with customers. Users can browse farm products, view detailed information about each product, and navigate seamlessly through the application using React Router.
 
-## Features
+## New Features
+- Dynamic Routing
+- Product Details Page
+- View Navigation
+- API Integration
+- useEffect Hook
+- Loading State
+- Local Storage
+- Custom 404 Page
+- Responsive Navigation
+
+## APIs Used
+- Fake Store API (or mention the API you actually used)
+- Example: https://fakestoreapi.com/products
+
+## React Concepts Implemented
+- React Functional Components
+- JSX
+- Props
+- useState
+- useEffect
 - React Router DOM
 - BrowserRouter
 - Routes & Route
 - Link & NavLink
-- Shared Layout Component
-- Nested Routing
-- Dynamic Routing with useParams()
-- useNavigate() Hook
-- 404 Not Found Page
+- useNavigate
+- useParams
+- Dynamic Routing
+- Conditional Rendering
+- Loading State
+- Local Storage
+
+## Technologies Used
+- React
+- Vite
+- React Router DOM
+- JavaScript
+- HTML5
+- CSS3
 
 ## Installation
 
@@ -40,7 +50,31 @@ npm install
 npm run dev
 ```
 
-## Technologies Used
-- React
-- Vite
-- React Router DOM
+## Screenshots
+
+### Home Page
+![Home Page](screenshots/home.png)
+
+### Products Page
+![Products Page](screenshots/products.png)
+
+### Product Details Page
+![Product Details](screenshots/details.png)
+
+### 404 Page
+![404 Page](screenshots/404.png)
+
+## Project Structure
+
+```
+src/
+├── Components/
+├── pages/
+├── assets/
+├── App.jsx
+└── main.jsx
+```
+
+## Author
+
+**Pujitha Kamma**
