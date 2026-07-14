@@ -1,49 +1,51 @@
-# Farm-Connect
+# Farm Connect
 
-## Project Description
-
-Farm-Connect is a React-based web application that connects farmers directly with customers. It allows users to browse products, view details, and place orders while helping farmers sell without intermediaries.
+## Description
+Farm Connect is a React application that allows users to browse farm products, view detailed information about each product, and experience a modern React application with routing, API integration, loading states, and local storage.
 
 ## New Features
-
-* Dynamic Routing
-* Details Page
-* View Navigation
-* API Integration
-* Data Fetching using `useEffect`
-* Loading State
-* Local Storage
-* Custom 404 Page
+- Dynamic Routing using React Router
+- Product Details Page
+- Navigation between pages
+- API Integration for fetching product data
+- Loading State while fetching data
+- Local Storage for saving user preferences/data
+- Custom 404 Page for invalid routes
+- Improved UI and Navigation
 
 ## APIs Used
-
-* JSONPlaceholder API
+- Fake Store API
+  https://fakestoreapi.com/
 
 ## React Concepts Implemented
-
-* Functional Components
-* JSX
-* Props
-* useState
-* useEffect
-* React Router
-* Dynamic Routing
-* Conditional Rendering
-* Local Storage
+- React Functional Components
+- JSX
+- Props
+- useState
+- useEffect
+- React Router
+- Dynamic Routing
+- Conditional Rendering
+- Local Storage
+- Loading State
 
 ## Screenshots
 
-* Home Page
-* Product List
-* Product Details Page
-* Loading Screen
-* 404 Page
+### Home Page
+![Home](screenshots/home.png)
 
-## Technologies Used
+### Products Page
+![Products](screenshots/products.png)
 
-* React
-* Vite
-* JavaScript
-* HTML
-* CSS
+### Product Details
+![Details](screenshots/details.png)
 
+### 404 Page
+![404](screenshots/404.png)
+
+## Installation
+
+```bash
+npm install
+npm run dev
+```
