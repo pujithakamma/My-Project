@@ -27,19 +27,21 @@ app.get("/home", (req, res) => {
     res.json("Welcome to Farm Connect Backend");
 });
 
+// Get All Products
 app.get("/products", (req, res) => {
     res.json(products);
 });
 
+// Get Product By ID
 app.get("/products/:id", (req, res) => {
     const id = Number(req.params.id);
     const product = products.find((product) => product.id == id);
     res.json(product);
 });
 
+// Add Product
 app.post("/products", (req, res) => {
     const product = req.body;
-    // req.body contains Postman data
     products.push(product);
     res.status(201).json({
         message: "Product Added"
@@ -58,6 +60,7 @@ app.put("/products/:id", (req, res) => {
     });
 });
 
+// Delete Product
 app.delete("/products/:id", (req, res) => {
     const id = Number(req.params.id);
     products = products.filter((product) => product.id != id);
@@ -66,6 +69,7 @@ app.delete("/products/:id", (req, res) => {
     });
 });
 
+// Start Server
 app.listen(8000, () => {
     console.log("Server is started at 8000");
 });
