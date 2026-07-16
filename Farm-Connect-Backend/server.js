@@ -1,30 +1,22 @@
 ﻿import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import farmerRoutes from "./routes/farmerRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
-// const express = require("express");
+dotenv.config();
+
+connectDB();
 
 const app = express();
+
 app.use(express.json());
 
-let products = [
-    {
-        id: 1,
-        name: "Fresh Tomatoes",
-        category: "Vegetables",
-        price: 40,
-        stock: 100
-    },
-    {
-        id: 2,
-        name: "Organic Milk",
-        category: "Dairy",
-        price: 70,
-        stock: 80
-    }
-];
+app.use("/products", productRoutes);
+app.use("/farmers", farmerRoutes);
 
-
-app.get("/home", (req, res) => {
-    res.json("Welcome to Farm Connect Backend");
+app.get("/", (req, res) => {
+    res.send("Welcome to Farm Connect Backend");
 });
 
 
@@ -50,3 +42,6 @@ app.post("/products", (req, res) => {
 app.listen(8000, () => {
     console.log("Server is started at 8000");
 });
+const PORT = process.env.PORT || 8000;
+
+
