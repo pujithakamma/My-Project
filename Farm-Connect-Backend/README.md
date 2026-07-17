@@ -1,8 +1,10 @@
-﻿# Farm Connect Backend
+﻿# 🌱 Farm Connect Backend
 
 ## Project Overview
 
-Farm Connect Backend is a REST API developed using **Node.js**, **Express.js**, **MongoDB Atlas**, and **Mongoose**. It provides APIs to manage farmers and products for the Farm Connect application.
+Farm Connect Backend is developed using **Node.js**, **Express.js**, **MongoDB Atlas**, and **Mongoose**. The project helps to manage farmers and products by performing CRUD operations. All the data is stored in MongoDB Atlas instead of temporary arrays.
+
+---
 
 ## Technologies Used
 
@@ -10,142 +12,153 @@ Farm Connect Backend is a REST API developed using **Node.js**, **Express.js**, 
 * Express.js
 * MongoDB Atlas
 * Mongoose
-* dotenv
-* Nodemon
+* Postman
+* Dotenv
 
-## Project Architecture
+---
 
-```
-backend/
-│
-├── config/
-│   └── db.js
-├── controllers/
-│   ├── farmerController.js
-│   └── productController.js
-├── models/
-│   ├── Farmer.js
-│   └── Product.js
-├── routes/
-│   ├── farmerRoutes.js
-│   └── productRoutes.js
-├── server.js
-├── package.json
-├── .env
-└── .gitignore
-```
+## Features
 
-## Database Schema
+* Connected Express application with MongoDB Atlas
+* Used Mongoose Schema and Models
+* Added Schema Validations
+* Implemented CRUD Operations
+* Fetch, Update and Delete using ObjectId
+* Error Handling Middleware
+* Soft Delete using `isDeleted`
+* Tested all APIs using Postman
 
-### Farmer
+---
 
-* id
-* farmerName
-* email
-* phone
-* village
-* state
+## Folder Structure
 
-### Product
+* config
+* controllers
+* middleware
+* models
+* routes
+* screenshots
+* server.js
+* package.json
+* README.md
 
-* id
-* productName
-* farmerName
-* category
-* quantity
-* price
-* location
+---
 
-## REST API Endpoints
+## API Endpoints
 
 ### Farmer APIs
 
-| Method | Endpoint     | Description      |
-| ------ | ------------ | ---------------- |
-| GET    | /farmers     | Get all farmers  |
-| GET    | /farmers/:id | Get farmer by ID |
-| POST   | /farmers     | Add a new farmer |
-| PUT    | /farmers/:id | Update farmer    |
-| DELETE | /farmers/:id | Delete farmer    |
+| Method | Endpoint     |
+| ------ | ------------ |
+| POST   | /farmers     |
+| GET    | /farmers     |
+| GET    | /farmers/:id |
+| PUT    | /farmers/:id |
+| DELETE | /farmers/:id |
 
 ### Product APIs
 
-| Method | Endpoint      | Description       |
-| ------ | ------------- | ----------------- |
-| GET    | /products     | Get all products  |
-| GET    | /products/:id | Get product by ID |
-| POST   | /products     | Add a new product |
-| PUT    | /products/:id | Update product    |
-| DELETE | /products/:id | Delete product    |
+| Method | Endpoint      |
+| ------ | ------------- |
+| POST   | /products     |
+| GET    | /products     |
+| GET    | /products/:id |
+| PUT    | /products/:id |
+| DELETE | /products/:id |
 
-## API Testing
+---
 
-The REST APIs were tested using Postman.
+## Validations
 
-Add the following screenshots in this section:
+### Farmer
 
-* GET Farmers
-* GET Farmer By ID
-* POST Farmer
-* PUT Farmer
-* DELETE Farmer
-* GET Products
-* GET Product By ID
-* POST Product
-* PUT Product
-* DELETE Product
+* Farmer Name is required
+* Email is required and unique
+* Email format validation
+* Phone number must contain 10 digits
+* Village is required
+* State is required
 
-## Environment Variables
+### Product
 
-Create a `.env` file with the following variables:
+* Product Name is required
+* Farmer Name is required
+* Category is required
+* Quantity must be greater than 0
+* Price cannot be negative
+* Location is required
 
-```
-PORT=8000
-MONGO_URI=your_mongodb_connection_string
-NODE_ENV=development
-```
+---
 
-## Postman API Testing
+## Error Handling
 
-### GET All Products
+The project handles:
 
-![GET All Products](./screenshots/get-all-products.png)
+* Invalid MongoDB Connection
+* Invalid ObjectId
+* Validation Errors
+* Duplicate Email
+* Record Not Found
+* Server Errors
 
-### GET Product By ID
+---
 
-![GET Product By ID](./screenshots/get-product-by-id.png)
+## Postman Testing
 
-### POST Product
+The following APIs were tested successfully:
 
-![POST Product](./screenshots/add-product.png)
+### Farmer
 
-### PUT Product
+* Add Farmer
+* Get All Farmers
+* Get Farmer by ID
+* Update Farmer
+* Delete Farmer
+* Invalid ID
+* Validation Error
 
-![PUT Product](./screenshots/update-product.png)
+### Product
 
-### DELETE Product
+* Add Product
+* Get All Products
+* Get Product by ID
+* Update Product
+* Delete Product
+* Invalid ID
+* Validation Error
 
-![DELETE Product](./screenshots/delete-product.png)
+---
 
-### GET All Farmers
+## Screenshots
 
-![GET All Farmers](./screenshots/get-all-farmers.png)
+### Farmer
 
-### GET Farmer By ID
+* Add Farmer
+* Get All Farmers
+* Get Farmer by ID
+* Update Farmer
+* Delete Farmer
+* Invalid Farmer ID
+* Farmer Validation Error
 
-![GET Farmer By ID](./screenshots/get-farmer-by-id.png)
+### Product
 
-### POST Farmer
+* Add Product
+* Get All Products
+* Get Product by ID
+* Update Product
+* Delete Product
+* Invalid Product ID
+* Product Validation Error
 
-![POST Farmer](./screenshots/add-farmer.png)
+### MongoDB
 
-### PUT Farmer
+* MongoDB Connection
+* Farmers Collection
+* Products Collection
 
-![PUT Farmer](./screenshots/update-farmer.png)
+---
 
-### DELETE Farmer
+## Conclusion
 
-![DELETE Farmer](./screenshots/delete-farmer.png)
-## Author
-
-Pujitha
+This project demonstrates how to build a backend application using Express and MongoDB Atlas. It includes database connectivity, Mongoose schema and models, validations, CRUD operations, ObjectId handling, and API testing using Postman.

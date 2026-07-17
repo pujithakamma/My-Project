@@ -1,114 +1,151 @@
-let products = [
-    {
-        id: 101,
-        productName: "Tomato",
-        farmerName: "Ramesh",
-        category: "Vegetables",
-        quantity: 100,
-        price: 40,
-        location: "Vijayawada"
-    },
-    {
-        id: 102,
-        productName: "Carrot",
-        farmerName: "Suresh",
-        category: "Vegetables",
-        quantity: 150,
-        price: 30,
-        location: "Guntur"
-    },
-    {
-        id: 103,
-        productName: "Red Chilli",
-        farmerName: "Mahesh",
-        category: "Spices",
-        quantity: 80,
-        price: 120,
-        location: "Chittoor"
-    }
-];
+﻿import mongoose from "mongoose";
+import Product from "../models/productModel.js";
 
-export function getProducts(req, res) {
-    res.status(200).json(products);
-}
+// Get all products
+export async function getProducts(req, res) {
+  try {
+    const products = await Product.find({ isDeleted: false });
 
-export function getProductById(req, res) {
-    const id = Number(req.params.id);
-
-    const product = products.find(
-        (product) => product.id === id
-    );
-    if (!product) {
-        return res.status(404).json({
-            success: false,
-            message: "Product not found"
-        });
-    }
     res.status(200).json({
-        success: true,
-        product
+      success: true,
+      count: products.length,
+      products,
     });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-export function addProduct(req, res) {
-    const product = req.body;
-    const existingProduct = products.find(
-        (p) => p.id === product.id
-    );
-    if (existingProduct) {
-        return res.status(400).json({
-            success: false,
-            message: "Product ID already exists"
-        });
+// Get product by ID
+export async function getProductById(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Product ID",
+      });
     }
-    products.push(product);
+
+    const product = await Product.findById(req.params.id);
+
+    if (!product || product.isDeleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+// Add product
+export async function addProduct(req, res) {
+  try {
+    const product = await Product.create(req.body);
+
     res.status(201).json({
-        success: true,
-        message: "Product added successfully",
-        product
+      success: true,
+      product,
     });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-export function updateProduct(req, res) {
-    const id = Number(req.params.id);
-    const updatedProduct = req.body;
-    let productFound = false;
-    products = products.map((product) => {
-        if (product.id === id) {
-            productFound = true;
-            return { ...product, ...updatedProduct };
-        }
-        return product;
-    });
-    if (!productFound) {
-        return res.status(404).json({
-            success: false,
-            message: "Product not found"
-        });
+// Update product
+export async function updateProduct(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Product ID",
+      });
     }
-    res.status(200).json({
-        success: true,
-        message: "Product updated successfully",
-        product: updatedProduct
-    });
-}
 
-export function deleteProduct(req, res) {
-    const id = Number(req.params.id);
-    const product = products.find(
-        (product) => product.id === id
+    const product = await Product.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        isDeleted: false,
+      },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
     );
-    products = products.filter(
-        (product) => product.id !== id
-    );
+
     if (!product) {
-        return res.status(404).json({
-            success: false,
-            message: "Product not found"
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
     }
+
     res.status(200).json({
-        success: true,
-        message: "Product deleted successfully"
+      success: true,
+      product,
     });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+// Delete product (Soft Delete)
+export async function deleteProduct(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Product ID",
+      });
+    }
+
+    const product = await Product.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        isDeleted: false,
+      },
+      {
+        isDeleted: true,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }

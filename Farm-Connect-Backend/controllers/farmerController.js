@@ -1,115 +1,151 @@
-let farmers = [
-    {
-        id: 201,
-        farmerName: "Ramesh",
-        email: "ramesh@gmail.com",
-        phone: "9876543210",
-        village: "Vijayawada",
-        state: "Andhra Pradesh"
-    },
-    {
-        id: 202,
-        farmerName: "Suresh",
-        email: "suresh@gmail.com",
-        phone: "9123456780",
-        village: "Guntur",
-        state: "Andhra Pradesh"
-    },
-    {
-        id: 203,
-        farmerName: "Mahesh",
-        email: "mahesh@gmail.com",
-        phone: "9988776655",
-        village: "Nellore",
-        state: "Andhra Pradesh"
-    }
-];
+﻿import mongoose from "mongoose";
+import Farmer from "../models/farmerModel.js";
 
+// Get all farmers
+export async function getFarmers(req, res) {
+  try {
+    const farmers = await Farmer.find({ isDeleted: false });
 
-export function getFarmers(req, res) {
-    res.status(200).json(farmers);
-}
-
-
-export function getFarmerById(req, res) {
-    const id = Number(req.params.id);
-    const farmer = farmers.find(
-        (farmer) => farmer.id === id
-    );
-    if (!farmer) {
-        return res.status(404).json({
-            success: false,
-            message: "Farmer not found"
-        });
-    }
     res.status(200).json({
-        success: true,
-        farmer
+      success: true,
+      count: farmers.length,
+      farmers,
     });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-
-export function addFarmer(req, res) {
-    const farmer = req.body;
-    const existingFarmer = farmers.find(
-        (f) => f.id === farmer.id
-    );
-    if (existingFarmer) {
-        return res.status(400).json({
-            success: false,
-            message: "Farmer ID already exists"
-        });
+// Get farmer by ID
+export async function getFarmerById(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Farmer ID",
+      });
     }
-    farmers.push(farmer);
+
+    const farmer = await Farmer.findById(req.params.id);
+
+    if (!farmer || farmer.isDeleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Farmer not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      farmer,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+// Add farmer
+export async function addFarmer(req, res) {
+  try {
+    const farmer = await Farmer.create(req.body);
+
     res.status(201).json({
-        success: true,
-        message: "Farmer added successfully",
-        farmer
+      success: true,
+      farmer,
     });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-
-export function updateFarmer(req, res) {
-    const id = Number(req.params.id);
-    const updatedFarmer = req.body;
-    let farmerFound = false;
-    farmers = farmers.map((farmer) => {
-        if (farmer.id === id) {
-            farmerFound = true;
-            return { ...farmer, ...updatedFarmer };
-        }
-        return farmer;
-    });
-    if (!farmerFound) {
-        return res.status(404).json({
-            success: false,
-            message: "Farmer not found"
-        });
+// Update farmer
+export async function updateFarmer(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Farmer ID",
+      });
     }
-    res.status(200).json({
-        success: true,
-        message: "Farmer updated successfully",
-        farmer: updatedFarmer
-    });
 
-}
+    const farmer = await Farmer.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        isDeleted: false,
+      },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
-export function deleteFarmer(req, res) {
-    const id = Number(req.params.id);
-    const farmer = farmers.find(
-        (farmer) => farmer.id === id
-    );
-    farmers = farmers.filter(
-        (farmer) => farmer.id !== id
-    );
     if (!farmer) {
-        return res.status(404).json({
-            success: false,
-            message: "Farmer not found"
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Farmer not found",
+      });
     }
+
     res.status(200).json({
-        success: true,
-        message: "Farmer deleted successfully"
+      success: true,
+      farmer,
     });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+// Delete farmer (Soft Delete)
+export async function deleteFarmer(req, res) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Farmer ID",
+      });
+    }
+
+    const farmer = await Farmer.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        isDeleted: false,
+      },
+      {
+        isDeleted: true,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!farmer) {
+      return res.status(404).json({
+        success: false,
+        message: "Farmer not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Farmer deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }

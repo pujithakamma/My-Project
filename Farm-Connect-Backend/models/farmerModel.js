@@ -2,38 +2,43 @@ import mongoose from "mongoose";
 
 const farmerSchema = new mongoose.Schema(
   {
-    name: {
+    farmerName: {
       type: String,
-      required: [true, "Farmer name is required"],
-      trim: true,
+      required: true,
+      minlength: 2,
     },
+
     email: {
       type: String,
-      required: [true, "Email address is required"],
-      trim: true,
-      lowercase: true,
+      required: true,
       unique: true,
-      match: [/.+@.+\..+/, "Please enter a valid email address"],
+      match: /.+@.+\..+/,
     },
+
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
-      trim: true,
+      required: true,
+      match: /^\d{10}$/,
     },
-    farmName: {
+
+    village: {
       type: String,
-      required: [true, "Farm name is required"],
-      trim: true,
+      required: true,
     },
-    location: {
+
+    state: {
       type: String,
-      trim: true,
-      default: "",
+      required: true,
     },
+
     specialty: {
       type: String,
-      trim: true,
       default: "General",
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -42,4 +47,5 @@ const farmerSchema = new mongoose.Schema(
 );
 
 const Farmer = mongoose.model("Farmer", farmerSchema);
+
 export default Farmer;
