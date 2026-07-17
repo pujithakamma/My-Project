@@ -159,6 +159,10 @@ The following APIs were tested successfully:
 
 ---
 
+## Project Status
+
+Completed MongoDB Atlas integration and CRUD API testing using Postman.
+
 ## Conclusion
 
 This project demonstrates how to build a backend application using Express and MongoDB Atlas. It includes database connectivity, Mongoose schema and models, validations, CRUD operations, ObjectId handling, and API testing using Postman.
