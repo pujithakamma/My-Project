@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../api/api";
 import "./Login.css";
 
-function Login({ onLoginSuccess, registeredUsers = [] }) {
+function Login({ onLoginSuccess }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,7 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
         setMessageType("info");
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
 
         if (!email.trim() || !password.trim()) {
@@ -31,32 +32,27 @@ function Login({ onLoginSuccess, registeredUsers = [] }) {
         setMessage("Checking your credentials...");
         setMessageType("info");
 
-        window.setTimeout(() => {
-            const normalizedInput = email.trim().toLowerCase();
-            const matchedUser = registeredUsers.find((user) => {
-                const storedEmail = user.email?.toLowerCase();
-                const storedUsername = user.username?.toLowerCase();
-                const storedFullName = user.fullName?.toLowerCase();
-                return (
-                    (storedEmail === normalizedInput || storedUsername === normalizedInput || storedFullName === normalizedInput) &&
-                    user.password === password
-                );
-            });
-
-            if (matchedUser) {
-                setMessage(`Welcome back, ${matchedUser.fullName || matchedUser.email}!`);
+        try {
+            const response = await loginUser(email, password);
+            
+            if (response.success) {
+                setMessage(`Welcome back, ${response.user.fullName || response.user.email}!`);
                 setMessageType("success");
-                window.setTimeout(() => {
-                    onLoginSuccess(matchedUser);
-                    setIsLoading(false);
+                
+                // Store user data in localStorage
+                localStorage.setItem("farmConnectUser", JSON.stringify(response.user));
+                
+                setTimeout(() => {
+                    onLoginSuccess?.(response.user);
                     navigate("/dashboard/overview", { replace: true });
                 }, 500);
-            } else {
-                setMessage("Invalid credentials. Please check your login details.");
-                setMessageType("error");
-                setIsLoading(false);
             }
-        }, 1800);
+        } catch (error) {
+            setMessage(error.message || "Invalid credentials. Please check your login details.");
+            setMessageType("error");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (

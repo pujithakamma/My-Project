@@ -75,10 +75,29 @@ function HomePage() {
           </section>
 
           <section className="feature-grid">
-            <ProductCard name="Tomato" price="₹40/kg" />
-            <ProductCard name="Red Chilli" price="₹55/kg" />
-            <FeatureCard title="Live Farm Camera" description="Watch your crops 24/7." />
-            <FeatureCard title="Direct Purchase" description="Buy directly from farmers." />
+            <ProductCard
+              product={{
+              productName: "Tomato",
+              price: 40,
+            }}
+          />
+
+            <ProductCard
+              product={{
+              productName: "Red Chilli",
+              price: 55,
+            }}
+          />
+
+            <FeatureCard
+              title="Live Farm Camera"
+              description="Watch your crops 24/7."
+          />
+
+            <FeatureCard
+              title="Direct Purchase"
+              description="Buy directly from farmers."
+          />
           </section>
 
           <section className="story-card">

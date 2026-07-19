@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../api/api";
 import "./Registration.css";
 
-function Registration({ registeredUsers = [], onRegister }) {
+function Registration({ onRegister }) {
   const initialForm = {
     fullName: "",
     email: "",
@@ -27,6 +28,7 @@ function Registration({ registeredUsers = [], onRegister }) {
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   function handleChange(e) {
@@ -119,15 +121,15 @@ function Registration({ registeredUsers = [], onRegister }) {
       return;
     }
 
-    const nextUserId = registeredUsers.length > 0
-      ? Math.max(...registeredUsers.map((user) => Number(user.id) || 0)) + 1
-      : 1;
+    submitRegistration();
+  }
 
-    const newUser = {
-      id: nextUserId,
+  async function submitRegistration() {
+    setIsLoading(true);
+
+    const userData = {
       fullName: formData.fullName.trim(),
       email: formData.email.trim().toLowerCase(),
-      username: formData.fullName.trim().toLowerCase().replace(/\s+/g, ""),
       password: formData.password,
       mobile: formData.mobile.trim(),
       gender: formData.gender,
@@ -140,18 +142,28 @@ function Registration({ registeredUsers = [], onRegister }) {
       farmName: formData.farmName.trim(),
       crops: formData.crops.trim(),
       profile: formData.profile,
-      terms: formData.terms,
     };
 
-    setErrors({});
-    setSuccess("Registration successful! Redirecting to login...");
-    setSubmittedData(newUser);
-    onRegister?.(newUser);
-    setFormData(initialForm);
+    try {
+      const response = await registerUser(userData);
 
-    window.setTimeout(() => {
-      navigate("/login");
-    }, 1200);
+      if (response.success) {
+        setErrors({});
+        setSuccess("Registration successful! Redirecting to login...");
+        setSubmittedData(response.user);
+        onRegister?.(response.user);
+        setFormData(initialForm);
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 1200);
+      }
+    } catch (error) {
+      setErrors({ submit: error.message || "Registration failed. Please try again." });
+      setSuccess("");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleReset() {

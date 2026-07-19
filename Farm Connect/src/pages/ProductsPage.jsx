@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchAllProducts } from "../api/api";
 import TomatoesImage from "../assets/Products/Tomatoes.jpg";
 import RedChilliImage from "../assets/Products/Red chilli.webp";
 import OrganicRiceImage from "../assets/Products/Organic-Rice.jpg";
@@ -27,14 +28,9 @@ function ProductsPage() {
 
   useEffect(() => {
     try {
-      const cachedProducts = localStorage.getItem(PRODUCTS_CACHE_KEY);
       const cachedFavorites = localStorage.getItem(FAVORITES_KEY);
       const cachedRecent = localStorage.getItem(RECENTLY_VIEWED_KEY);
       const cachedOrders = localStorage.getItem(ORDERS_KEY);
-
-      if (cachedProducts) {
-        setProducts(JSON.parse(cachedProducts));
-      }
 
       if (cachedFavorites) {
         setFavorites(JSON.parse(cachedFavorites));
@@ -56,58 +52,81 @@ function ProductsPage() {
     setLoading(true);
     setError("");
 
-    try {
-      const farmProducts = [
-        {
-          id: 1,
-          name: "Fresh Tomatoes",
-          price: "₹40/kg",
-          category: "Vegetables",
-          description: "Juicy, locally harvested tomatoes delivered fresh from Green Valley Farm.",
-          image: TomatoesImage,
-          rating: 4.7,
-        },
-        {
-          id: 2,
-          name: "Red Chilli",
-          price: "₹55/kg",
-          category: "Spices",
-          description: "Premium red chilli sourced from trusted farmers in Prathipadu.",
-          image: RedChilliImage,
-          rating: 4.5,
-        },
-        {
-          id: 3,
-          name: "Organic Rice",
-          price: "₹65/kg",
-          category: "Grains",
-          description: "Naturally grown organic rice with excellent grain quality.",
-          image: OrganicRiceImage,
-          rating: 4.8,
-        },
-        {
-          id: 4,
-          name: "Fresh Carrots",
-          price: "₹30/kg",
-          category: "Vegetables",
-          description: "Sweet and crunchy carrots harvested at peak freshness.",
-          image: FreshCarrotsImage,
-          rating: 4.3,
-        },
-        {
-          id: 5,
-          name: "Groundnut Seeds",
-          price: "₹90/kg",
-          category: "Seeds",
-          description: "High-yield groundnut seeds suitable for local farming needs.",
-          image: GroundnutSeedsImage,
-          rating: 4.6,
-        },
-      ];
+    const farmProducts = [
+      {
+        id: 1,
+        name: "Fresh Tomatoes",
+        price: "₹40/kg",
+        category: "Vegetables",
+        description: "Juicy, locally harvested tomatoes delivered fresh from Green Valley Farm.",
+        image: TomatoesImage,
+        rating: 4.7,
+      },
+      {
+        id: 2,
+        name: "Red Chilli",
+        price: "₹55/kg",
+        category: "Spices",
+        description: "Premium red chilli sourced from trusted farmers in Prathipadu.",
+        image: RedChilliImage,
+        rating: 4.5,
+      },
+      {
+        id: 3,
+        name: "Organic Rice",
+        price: "₹65/kg",
+        category: "Grains",
+        description: "Naturally grown organic rice with excellent grain quality.",
+        image: OrganicRiceImage,
+        rating: 4.8,
+      },
+      {
+        id: 4,
+        name: "Fresh Carrots",
+        price: "₹30/kg",
+        category: "Vegetables",
+        description: "Sweet and crunchy carrots harvested at peak freshness.",
+        image: FreshCarrotsImage,
+        rating: 4.3,
+      },
+      {
+        id: 5,
+        name: "Groundnut Seeds",
+        price: "₹90/kg",
+        category: "Seeds",
+        description: "High-yield groundnut seeds suitable for local farming needs.",
+        image: GroundnutSeedsImage,
+        rating: 4.6,
+      },
+    ];
 
-      setProducts(farmProducts);
-      localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(farmProducts));
+    try {
+      const response = await fetchAllProducts();
+      const backendProducts = Array.isArray(response?.products) ? response.products : [];
+      const mappedProducts = backendProducts.length
+        ? backendProducts.map((product, index) => ({
+            id: product._id || product.id || index + 1,
+            name: product.productName || product.name || `Product ${index + 1}`,
+            price: product.price ? `₹${product.price}/kg` : farmProducts[index]?.price || "₹0/kg",
+            category: product.category || farmProducts[index]?.category || "Vegetables",
+            description:
+              product.description || farmProducts[index]?.description ||
+              `${product.productName || product.name} available fresh from local farms.`,
+            image:
+              (product.productName === "Fresh Tomatoes" && TomatoesImage) ||
+              (product.productName === "Red Chilli" && RedChilliImage) ||
+              (product.productName === "Organic Rice" && OrganicRiceImage) ||
+              (product.productName === "Fresh Carrots" && FreshCarrotsImage) ||
+              (product.productName === "Groundnut Seeds" && GroundnutSeedsImage) ||
+              farmProducts[index]?.image || TomatoesImage,
+            rating: product.rating || farmProducts[index]?.rating || 4.5,
+          }))
+        : farmProducts;
+
+      setProducts(mappedProducts);
+      localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(mappedProducts));
     } catch (fetchError) {
+      setProducts(farmProducts);
       setError("We could not load the farm products. Please try again later.");
     } finally {
       setLoading(false);
