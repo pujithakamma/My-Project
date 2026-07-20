@@ -16,6 +16,7 @@ import DashboardOrders from "./pages/DashboardOrders";
 import DashboardLiveFarms from "./pages/DashboardLiveFarms";
 import UserDetailsPage from "./pages/UserDetailsPage";
 import UserEditPage from "./pages/UserEditPage";
+import UserViewPage from "./pages/UserViewPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const THEME_STORAGE_KEY = "farmConnectTheme";
@@ -208,7 +209,8 @@ function App() {
         <Route path="about" element={<AboutPage />} />
         <Route path="products" element={<ProductsPage lastVisitedPage={lastVisitedPage} />} />
         <Route path="details/:id" element={<ProductDetailsPage />} />
-        <Route path="users" element={<UserDetailsPage registeredUsers={registeredUsers} onDeleteUser={handleDeleteUser} />} />
+        <Route path="users" element={<UserDetailsPage />} />
+        <Route path="users/view/:id" element={<UserViewPage registeredUsers={registeredUsers} />} />
         <Route path="users/edit/:id" element={<UserEditPage registeredUsers={registeredUsers} onUpdateUser={handleUpdateUser} />} />
         <Route path="overview" element={<DashboardOverview />} />
         <Route path="orders" element={<DashboardOrders />} />
