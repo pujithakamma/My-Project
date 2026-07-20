@@ -1,8 +1,10 @@
 ﻿import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js"; 
 import farmerRoutes from "./routes/farmerRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -11,6 +13,8 @@ connectDB();
 const app = express();
 
 app.use(express.json());
+// Allow CORS from any origin during local development so frontend can call the API
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Welcome to Farm Connect Backend");
@@ -18,6 +22,7 @@ app.get("/", (req, res) => {
 
 app.use("/farmers", farmerRoutes);
 app.use("/products", productRoutes);
+app.use("/users", userRoutes);
 
 
 app.use(notFound);
