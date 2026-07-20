@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../api/api";
+import API from "../../api/api";
 import "./Login.css";
 
 function Login({ onLoginSuccess }) {
@@ -27,32 +27,33 @@ function Login({ onLoginSuccess }) {
             setMessageType("error");
             return;
         }
+            setIsLoading(true);
+            try {
+                const resp = await API.post("/users/login", { email: email.trim().toLowerCase(), password });
+                const response = resp.data || resp;
 
-        setIsLoading(true);
-        setMessage("Checking your credentials...");
-        setMessageType("info");
+                if (response.success) {
+                    setMessage(`Welcome back, ${response.user.fullName || response.user.email}!`);
+                    setMessageType("success");
 
-        try {
-            const response = await loginUser(email, password);
-            
-            if (response.success) {
-                setMessage(`Welcome back, ${response.user.fullName || response.user.email}!`);
-                setMessageType("success");
-                
-                // Store user data in localStorage
-                localStorage.setItem("farmConnectUser", JSON.stringify(response.user));
-                
-                setTimeout(() => {
-                    onLoginSuccess?.(response.user);
-                    navigate("/dashboard/overview", { replace: true });
-                }, 500);
+                    // Store user data in localStorage (compatibility)
+                    try { localStorage.setItem("farmConnectUser", JSON.stringify(response.user)); } catch (e) {}
+                    try { localStorage.setItem("user", JSON.stringify(response.user)); } catch (e) {}
+
+                    setTimeout(() => {
+                        onLoginSuccess?.(response.user);
+                        navigate("/dashboard/overview", { replace: true });
+                    }, 500);
+                } else {
+                    setMessage(response.message || "Invalid credentials. Please check your login details.");
+                    setMessageType("error");
+                }
+            } catch (error) {
+                setMessage(error?.response?.data?.message || error.message || "Invalid credentials. Please check your login details.");
+                setMessageType("error");
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            setMessage(error.message || "Invalid credentials. Please check your login details.");
-            setMessageType("error");
-        } finally {
-            setIsLoading(false);
-        }
     }
 
     return (
