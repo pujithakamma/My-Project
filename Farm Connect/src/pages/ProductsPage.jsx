@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchAllProducts } from "../api/api";
+import API from "../api/api";
 import TomatoesImage from "../assets/Products/Tomatoes.jpg";
 import RedChilliImage from "../assets/Products/Red chilli.webp";
 import OrganicRiceImage from "../assets/Products/Organic-Rice.jpg";
@@ -101,8 +101,15 @@ function ProductsPage() {
     ];
 
     try {
-      const response = await fetchAllProducts();
-      const backendProducts = Array.isArray(response?.products) ? response.products : [];
+      const resp = await API.get("/products");
+      const response = resp.data || resp;
+      const backendProducts = Array.isArray(response?.products)
+        ? response.products
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
       const mappedProducts = backendProducts.length
         ? backendProducts.map((product, index) => ({
             id: product._id || product.id || index + 1,

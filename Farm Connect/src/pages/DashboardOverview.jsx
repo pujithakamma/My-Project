@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../Components/LoadingSpinner/LoadingSpinner";
 import ErrorMessage from "../Components/ErrorMessage/ErrorMessage";
-import { getOrderStats, fetchAllFarmers, fetchAllProducts } from "../api/api";
+import API from "../api/api";
 import "./pages.css";
 
 function DashboardOverview() {
@@ -31,11 +31,15 @@ function DashboardOverview() {
     setError("");
 
     try {
-      const [orderStats, farmers, products] = await Promise.all([
-        getOrderStats(),
-        fetchAllFarmers(),
-        fetchAllProducts(),
+      const [orderResp, farmersResp, productsResp] = await Promise.all([
+        API.get("/orders/stats").catch(() => ({ data: { stats: {} } })),
+        API.get("/farmers").catch(() => ({ data: { count: 0 } })),
+        API.get("/products").catch(() => ({ data: { count: 0 } })),
       ]);
+
+      const orderStats = orderResp.data || {};
+      const farmers = farmersResp.data || {};
+      const products = productsResp.data || {};
 
       setStats({
         totalOrders: orderStats.stats?.totalOrders || 0,
@@ -46,7 +50,7 @@ function DashboardOverview() {
         totalProducts: products.count || 0,
       });
     } catch (err) {
-      setError(err.message || "Failed to load dashboard data");
+      setError(err?.response?.data?.message || err.message || "Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
