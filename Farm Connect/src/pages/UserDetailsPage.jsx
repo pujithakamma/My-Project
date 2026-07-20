@@ -1,13 +1,17 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./pages.css";
 import "./UserDetailsPage.css";
+import API from "../api/api";
 
-function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
+function UserDetailsPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [registeredUsers, setRegisteredUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -16,7 +20,7 @@ function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
 
     const matchedUser = registeredUsers.find((user) => {
       const username = String(user.username ?? "").toLowerCase();
-      const idValue = String(user.id ?? "");
+      const idValue = String(user._id ?? user.id ?? "");
       return idValue === term || username === term;
     });
 
@@ -31,10 +35,36 @@ function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
 
     return baseUsers.filter((user) => {
       const username = String(user.username ?? "").toLowerCase();
-      const idValue = String(user.id ?? "");
+      const idValue = String(user._id ?? user.id ?? "");
       return idValue === normalizedTerm || username.includes(normalizedTerm);
     });
   }, [filter, registeredUsers, searchTerm]);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    API.get('/users')
+      .then((res) => {
+        const data = res.data || {};
+        if (mounted) setRegisteredUsers(data.users || []);
+      })
+      .catch((err) => {
+        if (mounted) setError(err?.response?.data?.message || err.message || 'Failed to load users');
+      })
+      .finally(() => mounted && setLoading(false));
+    return () => (mounted = false);
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this user?')) return;
+    try {
+      await API.delete(`/users/${id}`);
+      setRegisteredUsers((prev) => prev.filter((u) => u._id !== id));
+      if (selectedUser?.id === id || selectedUser?._id === id) setSelectedUser(null);
+    } catch (e) {
+      alert(e.response?.data?.message || 'Delete failed');
+    }
+  };
 
   return (
     <div className="page-shell">
@@ -87,7 +117,13 @@ function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: "24px", textAlign: "center", color: "#4b5563" }}>
+                    Loading...
+                  </td>
+                </tr>
+              ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="7" style={{ padding: "24px", textAlign: "center", color: "#4b5563" }}>
                     No registered users found.
@@ -113,21 +149,14 @@ function UserDetailsPage({ registeredUsers = [], onDeleteUser }) {
                       <button
                         type="button"
                         className="view-btn"
-                        onClick={() => navigate(`/users/edit/${user.id}`)}
+                        onClick={() => navigate(`/users/edit/${user._id}`)}
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         className="delete-btn"
-                        onClick={() => {
-                          if (window.confirm(`Delete ${user.fullName}?`)) {
-                            onDeleteUser?.(user.id);
-                            if (selectedUser?.id === user.id) {
-                              setSelectedUser(null);
-                            }
-                          }
-                        }}
+                        onClick={() => handleDelete(user._id)}
                       >
                         Delete
                       </button>
