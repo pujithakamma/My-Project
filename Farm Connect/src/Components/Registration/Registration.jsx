@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../api/api";
+import API from "../../api/api";
 import "./Registration.css";
 
 function Registration({ onRegister }) {
@@ -30,6 +30,10 @@ function Registration({ onRegister }) {
   const [submittedData, setSubmittedData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [usersList, setUsersList] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState("");
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -110,7 +114,26 @@ function Registration({ onRegister }) {
     return newErrors;
   }
 
-  function handleSubmit(e) {
+  async function fetchUsers() {
+    setUsersLoading(true);
+    setUsersError("");
+    try {
+      const res = await API.get("/users");
+      const data = res.data || res;
+      setUsersList(Array.isArray(data.users) ? data.users : data.users || []);
+    } catch (err) {
+      setUsersError(err?.response?.data?.message || err.message || "Failed to load users");
+      setUsersList([]);
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const validationErrors = validateForm();
@@ -121,11 +144,9 @@ function Registration({ onRegister }) {
       return;
     }
 
-    submitRegistration();
-  }
-
-  async function submitRegistration() {
     setIsLoading(true);
+    setErrors({});
+    setSuccess("");
 
     const userData = {
       fullName: formData.fullName.trim(),
@@ -145,22 +166,24 @@ function Registration({ onRegister }) {
     };
 
     try {
-      const response = await registerUser(userData);
-
+      const res = await API.post("/users/register", userData);
+      const response = res.data || res;
       if (response.success) {
-        setErrors({});
-        setSuccess("Registration successful! Redirecting to login...");
+        setSuccess("Registration successful!");
         setSubmittedData(response.user);
-        onRegister?.(response.user);
         setFormData(initialForm);
-
-        setTimeout(() => {
-          navigate("/login");
-        }, 1200);
+        onRegister?.(response.user);
+        // refresh users list
+        await fetchUsers();
+        // navigate to login after successful registration
+        navigate("/login");
+      } else {
+        setErrors({ submit: response.message || "Registration failed" });
       }
     } catch (error) {
-      setErrors({ submit: error.message || "Registration failed. Please try again." });
-      setSuccess("");
+      console.error("register error", error);
+      const msg = error?.response?.data?.message || error?.message || "Registration failed. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsLoading(false);
     }
@@ -172,6 +195,16 @@ function Registration({ onRegister }) {
     setSuccess("");
     setSubmittedData(null);
   }
+
+  const handleDelete = async (userId) => {
+    if (!window.confirm("Delete this user?")) return;
+    try {
+      await API.delete(`/users/${userId}`);
+      await fetchUsers();
+    } catch (err) {
+      alert(err?.response?.data?.message || err.message || "Delete failed");
+    }
+  };
 
   return (
     <div className="register-container">
@@ -283,9 +316,48 @@ function Registration({ onRegister }) {
           <button type="submit">Register</button>
           <button type="button" onClick={handleReset}>Reset</button>
         </div>
+        {errors.submit && <p className="error">{errors.submit}</p>}
       </form>
 
       {success && <h3 className="success">{success}</h3>}
+
+      <div style={{ marginTop: 24 }}>
+        <h3>Registered Users</h3>
+        {usersLoading ? (
+          <p>Loading users...</p>
+        ) : usersError ? (
+          <p className="error">{usersError}</p>
+        ) : usersList.length === 0 ? (
+          <p>No registered users yet.</p>
+        ) : (
+          <table className="details-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Type</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usersList.map((u) => (
+                <tr key={u._id}>
+                  <td>{u.fullName}</td>
+                  <td>{u.email}</td>
+                  <td>{u.mobile}</td>
+                  <td>{u.userType}</td>
+                  <td>
+                    <button type="button" className="view-btn" onClick={() => navigate(`/users/view/${u._id}`)}>View</button>
+                    <button type="button" className="view-btn" onClick={() => navigate(`/users/edit/${u._id}`)}>Edit</button>
+                    <button type="button" className="delete-btn" onClick={() => handleDelete(u._id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {submittedData && (
         <div className="details">

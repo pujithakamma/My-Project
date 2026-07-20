@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./pages.css";
+import API from "../api/api";
 
 function UserEditPage({ registeredUsers = [], onUpdateUser }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const userId = Number(id);
+  const userId = id;
 
-  const userToEdit = registeredUsers.find((user) => user.id === userId);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [userToEdit, setUserToEdit] = useState(null);
 
   const [formValues, setFormValues] = useState({
     fullName: "",
@@ -20,22 +22,68 @@ function UserEditPage({ registeredUsers = [], onUpdateUser }) {
     state: "",
     pincode: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
-    if (userToEdit) {
-      setFormValues({
-        fullName: userToEdit.fullName || "",
-        email: userToEdit.email || "",
-        username: userToEdit.username || "",
-        mobile: userToEdit.mobile || "",
-        userType: userToEdit.userType || "Customer",
-        village: userToEdit.village || "",
-        address: userToEdit.address || "",
-        state: userToEdit.state || "",
-        pincode: userToEdit.pincode || "",
-      });
+    let mounted = true;
+    async function fetchUser() {
+      setLoadingUser(true);
+      // try find in registeredUsers first
+      const found = registeredUsers.find((u) => u._id === userId || u.id === userId);
+      if (found) {
+        if (!mounted) return;
+        setUserToEdit(found);
+        setFormValues({
+          fullName: found.fullName || "",
+          email: found.email || "",
+          username: found.username || "",
+          mobile: found.mobile || "",
+          userType: found.userType || "Customer",
+          village: found.village || "",
+          address: found.address || "",
+          state: found.state || "",
+          pincode: found.pincode || "",
+        });
+        setLoadingUser(false);
+        return;
+      }
+
+      try {
+        const res = await API.get(`/users/${userId}`);
+        const data = res.data || res;
+        const u = data.user || data;
+        if (!mounted) return;
+        setUserToEdit(u);
+        setFormValues({
+          fullName: u.fullName || "",
+          email: u.email || "",
+          username: u.username || "",
+          mobile: u.mobile || "",
+          userType: u.userType || "Customer",
+          village: u.village || "",
+          address: u.address || "",
+          state: u.state || "",
+          pincode: u.pincode || "",
+        });
+      } catch (err) {
+        // leave userToEdit null
+      } finally {
+        if (mounted) setLoadingUser(false);
+      }
     }
-  }, [userToEdit]);
+
+    fetchUser();
+    return () => (mounted = false);
+  }, [userId, registeredUsers]);
+
+  if (loadingUser) {
+    return (
+      <div className="page-shell">
+        <div className="page-card">Loading user...</div>
+      </div>
+    );
+  }
 
   if (!userToEdit) {
     return (
@@ -54,11 +102,26 @@ function UserEditPage({ registeredUsers = [], onUpdateUser }) {
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onUpdateUser?.(userId, formValues);
-    navigate("/users");
+    setSubmitError("");
+    setSubmitting(true);
+    try {
+      const res = await API.put(`/users/${userId}`, formValues);
+      const data = res.data || res;
+      if (data.success) {
+        onUpdateUser?.(userId, data.user || formValues);
+        navigate("/users");
+      } else {
+        setSubmitError(data.message || "Update failed");
+      }
+    } catch (e) {
+      setSubmitError(e?.response?.data?.message || e.message || "Update failed");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
 
   return (
     <div className="page-shell">
@@ -183,11 +246,12 @@ function UserEditPage({ registeredUsers = [], onUpdateUser }) {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="page-btn">
-              Save changes
+            <button type="submit" className="page-btn" disabled={submitting}>
+              {submitting ? "Saving..." : "Save changes"}
             </button>
             <button type="button" className="page-btn secondary" onClick={() => navigate("/users")}>Cancel</button>
           </div>
+          {submitError && <p className="error">{submitError}</p>}
         </form>
       </div>
     </div>
