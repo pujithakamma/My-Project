@@ -1,0 +1,281 @@
+/* Registration Management Page Styles */
+
+.registration-management-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: slideDown 0.5s ease;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 700;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin: 0.5rem 0 0 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Registrations Container */
+.registrations-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease 0.1s both;
+}
+
+/* Table Styles */
+.registrations-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.registrations-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.registrations-table th {
+  padding: 1.2rem;
+  text-align: left;
+  letter-spacing: 0.5px;
+}
+
+.registrations-table tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.registrations-table tbody tr:hover {
+  background-color: #f8f9fa;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.registrations-table td {
+  padding: 1rem 1.2rem;
+  vertical-align: middle;
+}
+
+.registrations-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Column Styles */
+.row-number {
+  font-weight: 600;
+  color: #27ae60;
+  min-width: 40px;
+}
+
+.reg-name {
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 120px;
+}
+
+.reg-email {
+  color: #3498db;
+  word-break: break-all;
+  min-width: 140px;
+}
+
+.reg-type {
+  text-align: center;
+  min-width: 100px;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 70px;
+}
+
+.type-badge.farmer {
+  background-color: #d5f4e6;
+  color: #27ae60;
+}
+
+.type-badge.buyer {
+  background-color: #fdeef4;
+  color: #e74c3c;
+}
+
+.type-badge.admin {
+  background-color: #fef5e7;
+  color: #f39c12;
+}
+
+.type-badge.regular {
+  background-color: #ebf5fb;
+  color: #3498db;
+}
+
+.reg-mobile {
+  color: #e74c3c;
+  min-width: 100px;
+}
+
+.reg-village {
+  color: #8e44ad;
+  min-width: 100px;
+}
+
+.reg-date {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  min-width: 140px;
+}
+
+/* Status Styles */
+.reg-status {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background-color: #d5f4e6;
+  color: #27ae60;
+}
+
+.status-badge.pending {
+  background-color: #fef5e7;
+  color: #f39c12;
+}
+
+.status-badge.inactive {
+  background-color: #fadbd8;
+  color: #e74c3c;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .registration-management-page {
+    padding: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .registrations-table th,
+  .registrations-table td {
+    padding: 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .registration-management-page {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  .registrations-table {
+    font-size: 0.75rem;
+  }
+
+  .registrations-table th,
+  .registrations-table td {
+    padding: 0.6rem;
+  }
+
+  .reg-name,
+  .reg-email,
+  .reg-village {
+    min-width: 80px;
+  }
+
+  /* Hide some columns on smaller screens */
+  .reg-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-management-page {
+    padding: 0.75rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .page-header p {
+    font-size: 0.8rem;
+  }
+
+  .registrations-table {
+    font-size: 0.65rem;
+  }
+
+  .registrations-table th,
+  .registrations-table td {
+    padding: 0.4rem;
+  }
+
+  .reg-name,
+  .reg-email,
+  .reg-village {
+    min-width: 60px;
+  }
+
+  /* Hide more columns on mobile */
+  .reg-mobile,
+  .reg-village {
+    display: none;
+  }
+}
