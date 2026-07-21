@@ -102,3 +102,131 @@
   margin: 0;
   color: #3e4b42;
 }
+
+.add-user-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 25px 0;
+}
+
+.add-farmer-btn,
+.add-customer-btn {
+  width: 120px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.add-farmer-btn {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
+
+.add-farmer-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(46, 125, 50, 0.4);
+}
+
+.add-customer-btn {
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+}
+
+.add-customer-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(21, 101, 192, 0.4);
+}
+
+.add-farmer-btn:active,
+.add-customer-btn:active {
+  transform: scale(0.97);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: 15px 20px;
+  background: #f8faf8;
+  border: 1px solid #d8e7d8;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 250px;
+  padding: 10px 15px;
+  border: 1px solid #b5cdb5;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.search-input {
+  width: 220px;
+  padding: 8px 12px;
+  border: 1.5px solid #2e7d32;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #1b5e20;
+  box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+}
+
+.toolbar button {
+  padding: 8px 16px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toolbar button:hover {
+  background: #1b5e20;
+}
+
+.toolbar select {
+  padding: 8px 12px;
+  border: 1.5px solid #2e7d32;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.toolbar select:focus {
+  border-color: #1b5e20;
+}
+
+.toolbar label {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 14px;
+}

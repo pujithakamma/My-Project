@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./pages.css";
 import "./UserDetailsPage.css";
@@ -6,6 +6,11 @@ import API from "../api/api";
 
 function UserDetailsPage() {
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [sortField, setSortField] = useState("fullName");
+  const [order, setOrder] = useState("asc");
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
@@ -15,45 +20,28 @@ function UserDetailsPage() {
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return;
-
-    const matchedUser = registeredUsers.find((user) => {
-      const username = String(user.username ?? "").toLowerCase();
-      const idValue = String(user._id ?? user.id ?? "");
-      return idValue === term || username === term;
-    });
-
-    setSelectedUser(matchedUser || null);
+    setPage(1);
+    fetchUsers(1);
   };
+  async function fetchUsers(pageNumber = 1) {
+    try {
+      setLoading(true);
+      const response = await API.get(
+  `/users?search=${searchTerm}&page=${pageNumber}&limit=${limit}&sort=${sortField}&order=${order}&filter=${filter}`
+);
+      setRegisteredUsers(response.data.users);
+      setPage(response.data.page);
+      setTotalPages(response.data.totalPages);
 
-  const filteredUsers = useMemo(() => {
-    const normalizedTerm = searchTerm.trim().toLowerCase();
-    const baseUsers = filter === "all" ? registeredUsers : registeredUsers.filter((user) => user.userType === filter);
-
-    if (!normalizedTerm) return baseUsers;
-
-    return baseUsers.filter((user) => {
-      const username = String(user.username ?? "").toLowerCase();
-      const idValue = String(user._id ?? user.id ?? "");
-      return idValue === normalizedTerm || username.includes(normalizedTerm);
-    });
-  }, [filter, registeredUsers, searchTerm]);
-
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    API.get('/users')
-      .then((res) => {
-        const data = res.data || {};
-        if (mounted) setRegisteredUsers(data.users || []);
-      })
-      .catch((err) => {
-        if (mounted) setError(err?.response?.data?.message || err.message || 'Failed to load users');
-      })
-      .finally(() => mounted && setLoading(false));
-    return () => (mounted = false);
-  }, []);
+  fetchUsers(page);
+}, [page, searchTerm, sortField, order, limit, filter]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this user?')) return;
@@ -74,7 +62,7 @@ function UserDetailsPage() {
             <h1>Registered Users</h1>
             <p>All customer and farmer registrations saved from the registration form.</p>
           </div>
-          <span className="highlight-pill">{filteredUsers.length} records</span>
+          <span className="highlight-pill">{registeredUsers.length} records</span>
         </div>
 
         <form className="toolbar" style={{ gap: 12, flexWrap: "wrap" }} onSubmit={handleSearchSubmit}>
@@ -85,22 +73,49 @@ function UserDetailsPage() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
-          <button type="submit" className="page-btn secondary" style={{ minWidth: 120 }}>
-            Search
-          </button>
-          <label htmlFor="user-filter" style={{ marginRight: 8, fontWeight: 600, color: "#2e7d32" }}>
-            Show:
-          </label>
-          <select
-            id="user-filter"
-            className="filter-select"
-            value={filter}
-            onChange={(event) => setFilter(event.target.value)}
+          <button
+            type="button"
+            className="add-farmer-btn"
+            onClick={() => navigate("/register?type=Farmer")}
           >
-            <option value="all">All users</option>
-            <option value="Farmer">Farmers</option>
-            <option value="Customer">Customers</option>
-          </select>
+            Add Farmer
+          </button>
+          <button
+            type="button"
+            className="add-customer-btn"
+            onClick={() => navigate("/register?type=Customer")}
+          >
+            Add Customer
+          </button>
+        <button type="submit">
+          Search
+        </button> 
+        <select
+          value={sortField}
+          onChange={(e) => setSortField(e.target.value)}
+        >
+         <option value="fullName">Name</option>
+         <option value="email">Email</option>
+         <option value="village">Village</option>
+        </select>
+
+        <select
+          value={order}
+          onChange={(e) => setOrder(e.target.value)}
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <label>Show:</label>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="all">All users</option>
+          <option value="Farmer">Farmers</option>
+          <option value="Customer">Customers</option>
+        </select>
+        
         </form>
 
         <div className="table-wrapper">
@@ -123,15 +138,15 @@ function UserDetailsPage() {
                     Loading...
                   </td>
                 </tr>
-              ) : filteredUsers.length === 0 ? (
+              ) : registeredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="7" style={{ padding: "24px", textAlign: "center", color: "#4b5563" }}>
                     No registered users found.
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user) => (
-                  <tr key={user.id}>
+                registeredUsers.map((user)=> (
+                  <tr key={user._id || user.id}>
                     <td>{user.fullName}</td>
                     <td>{user.email}</td>
                     <td>{user.mobile}</td>
@@ -167,6 +182,24 @@ function UserDetailsPage() {
             </tbody>
           </table>
         </div>
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <span style={{ margin: "0 15px" }}>
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+          </div>
 
         {selectedUser && (
           <div className="user-preview-card">

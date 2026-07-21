@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import API from "../../api/api";
 import "./Registration.css";
 
 function Registration({ onRegister }) {
+   const navigate = useNavigate();
+   const [searchParams] = useSearchParams();
+   const defaultUserType = searchParams.get("type") || "";
   const initialForm = {
     fullName: "",
     email: "",
@@ -12,7 +16,7 @@ function Registration({ onRegister }) {
     confirmPassword: "",
     gender: "",
     dob: "",
-    userType: "",
+    userType:defaultUserType,
     address: "",
     village: "",
     state: "",
@@ -29,8 +33,6 @@ function Registration({ onRegister }) {
   const [showPassword, setShowPassword] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-
   const [usersList, setUsersList] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState("");
@@ -134,19 +136,25 @@ function Registration({ onRegister }) {
   }, []);
 
   async function handleSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const validationErrors = validateForm();
+  console.log("Register button clicked");
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setSuccess("");
-      return;
-    }
+  const validationErrors = validateForm();
 
-    setIsLoading(true);
-    setErrors({});
+  console.log("Validation errors:", validationErrors);
+
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
     setSuccess("");
+    return;
+  }
+
+  console.log("Validation passed");
+
+  setIsLoading(true);
+  setErrors({});
+  setSuccess("");
 
     const userData = {
       fullName: formData.fullName.trim(),
@@ -166,7 +174,9 @@ function Registration({ onRegister }) {
     };
 
     try {
+      console.log("Sending data:", userData);
       const res = await API.post("/users/register", userData);
+      console.log("Backend response:", res.data);
       const response = res.data || res;
       if (response.success) {
         setSuccess("Registration successful!");
