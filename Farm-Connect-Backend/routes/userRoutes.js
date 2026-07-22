@@ -9,14 +9,29 @@ import {
   searchUsers,
 } from "../controllers/userController.js";
 
+import upload from "../middleware/upload.js";
+
 const router = express.Router();
 
-router.post("/register", registerUser);
+// Register with profile image upload
+router.post("/register", upload.single("profile"), registerUser);
+
+// Login
 router.post("/login", loginUser);
+
+// Search users
 router.get("/search", searchUsers);
+
+// Get all users
 router.get("/", getUsers);
+
+// Get single user
 router.get("/:id", getUserById);
-router.put("/:id", updateUser);
+
+// Update user with image upload
+router.put("/:id", upload.single("profile"), updateUser);
+
+// Delete user
 router.delete("/:id", deleteUser);
 
 export default router;
