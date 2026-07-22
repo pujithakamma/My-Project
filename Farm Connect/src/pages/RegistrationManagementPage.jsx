@@ -19,20 +19,30 @@ function RegistrationManagementPage({
   const limit = 10;
   const [sortField, setSortField] = useState("createdAt");
   const [order, setOrder] = useState("desc");
+
   async function fetchRegistrations(pageNumber = 1) {
-    try {
-      setLoading(true);
-      const queryString = `page=${pageNumber}&limit=${limit}&sort=${sortField}&order=${order}`;
-      const response = await API.get(`/users?${queryString}`);
-      setRegistrations(response.data.users);
-      setPage(response.data.page ?? pageNumber);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  try {
+    setLoading(true);
+
+    const queryString = `page=${pageNumber}&limit=${limit}&sort=${sortField}&order=${order}`;
+
+    const response = await API.get(`/users?${queryString}`);
+
+    console.log(response.data.users);
+
+    setRegistrations(response.data.users);
+    setTotalPages(response.data.totalPages);
+
+  } catch(error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
   }
+}
+
+useEffect(() => {
+  fetchRegistrations(page);
+}, [page, sortField, order]);
 
   async function searchRegistrations(value) {
     try {
@@ -47,11 +57,6 @@ function RegistrationManagementPage({
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    fetchRegistrations(page);
-  }, [page, sortField, order]);
-
   useEffect(() => {
     if (Array.isArray(initialRegistrations) && initialRegistrations.length > 0) {
       setRegistrations(initialRegistrations);
@@ -166,143 +171,187 @@ function RegistrationManagementPage({
   }
 
   if (Array.isArray(registrations) && registrations.length > 0) {
-    return (
-      <div className="registration-card">
-        <h2>Registrations List</h2>
+  return (
+    <div className="registration-card">
+      <h2>Registrations List</h2>
 
-        <div className="controls-section">
-          <form className="search-form" onSubmit={handleSearchSubmit}>
-            <input
-              type="text"
-              placeholder="Search registrations..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
-            <button type="submit">Search</button>
-          </form>
+      <div className="controls-section">
+        <form className="search-form" onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            placeholder="Search registrations..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          <button type="submit">Search</button>
+        </form>
 
-          <div className="sort-controls">
-            <label>Sort By:</label>
-            <select value={sortField} onChange={(e) => setSortField(e.target.value)}>
-              <option value="createdAt">Created Date</option>
-              <option value="fullName">Full Name</option>
-              <option value="email">Email</option>
-              <option value="userType">User Type</option>
-              <option value="village">Village</option>
-            </select>
+        <div className="sort-controls">
+          <label>Sort By:</label>
 
-            <label>Order:</label>
-            <select value={order} onChange={(e) => setOrder(e.target.value)}>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+          >
+            <option value="createdAt">Created Date</option>
+            <option value="fullName">Full Name</option>
+            <option value="email">Email</option>
+            <option value="userType">User Type</option>
+            <option value="village">Village</option>
+          </select>
+
+          <label>Order:</label>
+
+          <select
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
         </div>
+      </div>
 
-        <div className="registration-table-wrapper">
-          <table className="registration-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>User Type</th>
-                <th>Village</th>
-                <th>Registered Date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {registrations.map((reg, index) => {
-                const regKey = reg._id || reg.id || "";
+      <div className="registration-table-wrapper">
+        <table className="registration-table">
+
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th>User Type</th>
+              <th>Village</th>
+              <th>Registered Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {
+              registrations.map((reg, index) => {
+
+                const regKey = reg._id || reg.email || index;
 
                 return (
                   <tr
-                    key={reg._id ?? reg.email ?? index}
+                    key={regKey}
                     onClick={() => onSelectRegistration(reg)}
                   >
-                    <td>
-                      <div className="registration-table-cell">
-                        <strong>{reg.fullName || "Unknown"}</strong>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell">
-                        {reg.email || "N/A"}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell">{reg.mobile || "N/A"}</div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell">
-                        <span className={`type-badge ${reg.userType}`}>
-                          {reg.userType || "Regular"}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell">{reg.village || "N/A"}</div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell">{formatDate(reg.createdAt)}</div>
-                    </td>
-                    <td>
-                      <div className="registration-table-cell registration-action-group">
-                        <Link
-                          to={`/registrations/management/${regKey}`}
-                          className="registration-view-button"
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          View
-                        </Link>
 
-                        <button
-                          type="button"
-                          className="registration-delete-button"
-                          onClick={(event) => handleDeleteRegistration(event, regKey)}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                    <td>
+                      {
+                        reg.profile ? (
+                          <img
+                            src={`http://localhost:8000/uploads/${reg.profile}`}
+                            alt="profile"
+                            width="50"
+                            height="50"
+                             onLoad={() => console.log("Image loaded:", reg.profile)}
+                             onError={() => console.log("Image failed:", reg.profile)}
+                          />
+                        ) : (
+                          "No Image"
+                        )
+                      }
                     </td>
+
+                    <td>
+                      {reg.fullName || "Unknown"}
+                    </td>
+
+                    <td>
+                      {reg.email || "N/A"}
+                    </td>
+
+                    <td>
+                      {reg.mobile || "N/A"}
+                    </td>
+
+                    <td>
+                      <span className={`type-badge ${reg.userType}`}>
+                        {reg.userType || "Regular"}
+                      </span>
+                    </td>
+
+                    <td>
+                      {reg.village || "N/A"}
+                    </td>
+
+                    <td>
+                      {formatDate(reg.createdAt)}
+                    </td>
+
+                    <td>
+
+                      <Link
+                        to={`/registrations/management/${reg._id}`}
+                        className="registration-view-button"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View
+                      </Link>
+
+                      <button
+                        type="button"
+                        className="registration-delete-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteRegistration(e, reg._id);
+                        }}
+                      >
+                        Delete
+                      </button>
+
+                    </td>
+
                   </tr>
                 );
-              })}
-            </tbody>
-          </table>
-          <div className="pagination">
-            <button
-              type="button"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-            >
-              Previous
-            </button>
 
-            <span>
-              {" "}Page {page} of {totalPages} {" "}
-            </span>
+              })
+            }
+          </tbody>
 
-            <button
-              type="button"
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-            >
-              Next
-            </button>
-          </div>
+        </table>
+
+        <div className="pagination">
+
+          <button
+            type="button"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+
+          <span>
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="registration-card">
-      <h2>Registration Details</h2>
-      <p>No registrations found.</p>
+      </div>
+
     </div>
   );
+}
+
+return (
+  <div className="registration-card">
+    <h2>Registration Details</h2>
+    <p>No registrations found.</p>
+  </div>
+);
+
 }
 
 export default RegistrationManagementPage;

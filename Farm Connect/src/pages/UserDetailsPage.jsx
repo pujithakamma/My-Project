@@ -122,6 +122,7 @@ function UserDetailsPage() {
           <table className="details-table">
             <thead>
               <tr>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
@@ -147,6 +148,23 @@ function UserDetailsPage() {
               ) : (
                 registeredUsers.map((user)=> (
                   <tr key={user._id || user.id}>
+                    <td>
+                      {user.profile ? (
+                    <img
+                      src={`http://localhost:8000/uploads/${user.profile}`}
+                      alt="Profile"
+                      width="50"
+                      height="50"
+                      style={{
+                        width: "70px",
+                        height: "70px",
+                        objectFit: "cover"
+                     }}
+                    />
+                  ) : (
+                    "No Image"
+                  )}
+                </td>
                     <td>{user.fullName}</td>
                     <td>{user.email}</td>
                     <td>{user.mobile}</td>
